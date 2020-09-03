@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+
 
 namespace pwsoFunctions
 {
@@ -12,51 +14,90 @@ namespace pwsoFunctions
         public static void Run([QueueTrigger("registrant", Connection = "AzureWebJobsStorage")]string myQueueItem, ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+
+            try
+            {
+                var registrantMessage = JsonSerializer.Deserialize<RegistrantMessage>(myQueueItem, options);
+                var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(myQueueItem, options);
+                registrantDb.Emails = new List<string>();
+                registrantDb.Phones = new List<RegistrantPhone>();
+                registrantDb.Sport = registrantMessage.SportName;
+                AddEmail(registrantMessage.Email1, registrantDb);
+                AddEmail(registrantMessage.Email2, registrantDb);
+                AddEmail(registrantMessage.Email3, registrantDb);
+                AddPhone(registrantMessage.Phone1, registrantMessage.Phone1Type, registrantMessage.CanText1, registrantDb);
+                AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
+                AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
+            }
+            catch (Exception e)
+            {
+                log.LogInformation(e.ToString());
+                //throw;
+            }
+        }
+
+        private static void AddPhone(string phone, string phoneType, bool canText, RegistrantDb registrantDb)
+        {
+            if (string.IsNullOrEmpty(phone)) return;
+            var registrantPhone = new RegistrantPhone {Phone = phone, PhoneType = phoneType, CanText = canText};
+            registrantDb.Phones.Add(registrantPhone);
+        }
+
+        private static void AddEmail(string email, RegistrantDb registrantDb)
+        {
+            if (!string.IsNullOrEmpty(email))
+            {
+                registrantDb.Emails.Add(email);
+            }
         }
     }
 
     public class RegistrantMessage
     {
-        public int id { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string nickName { get; set; }
-        public string size { get; set; }
-        public int sportId { get; set; }
-        public int programId { get; set; }
-        public string email1 { get; set; }
-        public string email2 { get; set; }
-        public string email3 { get; set; }
-        public string phone1 { get; set; }
-        public string phone2 { get; set; }
-        public string phone3 { get; set; }
-        public string phoneType1 { get; set; }
-        public string phoneType2 { get; set; }
-        public string phoneType3 { get; set; }
-        public bool canText1 { get; set; }
-        public bool canText2 { get; set; }
-        public bool canText3 { get; set; }
-        public string sportName { get; set; }
-        public string programName { get; set; }
-        public bool isVolunteer { get; set; }
-        public bool isWaitlisted { get; set; }
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string NickName { get; set; }
+        public string Size { get; set; }
+        public int SportId { get; set; }
+        public int ProgramId { get; set; }
+        public string Email1 { get; set; }
+        public string Email2 { get; set; }
+        public string Email3 { get; set; }
+        public string Phone1 { get; set; }
+        public string Phone2 { get; set; }
+        public string Phone3 { get; set; }
+        public string Phone1Type { get; set; }
+        public string Phone2Type { get; set; }
+        public string Phone3Type { get; set; }
+        public bool CanText1 { get; set; }
+        public bool CanText2 { get; set; }
+        public bool CanText3 { get; set; }
+        public string SportName { get; set; }
+        public string ProgramName { get; set; }
+        public bool IsVolunteer { get; set; }
+        public bool IsWaitListed { get; set; }
     }
 
     public class RegistrantDb
     {
-        public int id { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string nickName { get; set; }
-        public string size { get; set; }
-        public int sportId { get; set; }
-        public int programId { get; set; }
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string NickName { get; set; }
+        public string Size { get; set; }
+        public int SportId { get; set; }
+        public int ProgramId { get; set; }
         public List<string> Emails { get; set; }
         public List<RegistrantPhone> Phones{ get; set; }
-        public string sportName { get; set; }
-        public string programName { get; set; }
-        public bool isVolunteer { get; set; }
-        public bool isWaitlisted { get; set; }
+        public string Sport { get; set; }
+        public string ProgramName { get; set; }
+        public bool IsVolunteer { get; set; }
+        public bool IsWaitListed { get; set; }
     }
 
     public class RegistrantPhone
