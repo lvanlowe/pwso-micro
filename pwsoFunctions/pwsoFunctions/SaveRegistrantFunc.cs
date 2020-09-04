@@ -11,18 +11,23 @@ namespace pwsoFunctions
     public static class SaveRegistrantFunc
     {
         [FunctionName("SaveRegistrantFunc")]
-        public static void Run([QueueTrigger("registrant", Connection = "AzureWebJobsStorage")]string myQueueItem, ILogger log)
+        public static void Run([QueueTrigger("registrant", Connection = "AzureWebJobsStorage")]string myQueueItem,
+                        [CosmosDB(
+                databaseName: "pwso",
+                collectionName: "registrant",
+                ConnectionStringSetting = "CosmosDBConnection")]out dynamic document,
+            ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,
             };
-
+            RegistrantDb registrantDb = new RegistrantDb();
             try
             {
                 var registrantMessage = JsonSerializer.Deserialize<RegistrantMessage>(myQueueItem, options);
-                var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(myQueueItem, options);
+                registrantDb = JsonSerializer.Deserialize<RegistrantDb>(myQueueItem, options);
                 registrantDb.Emails = new List<string>();
                 registrantDb.Phones = new List<RegistrantPhone>();
                 registrantDb.Sport = registrantMessage.SportName;
@@ -32,12 +37,16 @@ namespace pwsoFunctions
                 AddPhone(registrantMessage.Phone1, registrantMessage.Phone1Type, registrantMessage.CanText1, registrantDb);
                 AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
                 AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
+                
             }
             catch (Exception e)
             {
                 log.LogInformation(e.ToString());
                 //throw;
             }
+
+            document = registrantDb;
+
         }
 
         private static void AddPhone(string phone, string phoneType, bool canText, RegistrantDb registrantDb)
