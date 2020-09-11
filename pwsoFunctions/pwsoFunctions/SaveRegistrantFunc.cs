@@ -4,6 +4,8 @@ using System.Text.Json;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using pwsoProcesses;
+using pwsoProcesses.Models;
 
 
 namespace pwsoFunctions
@@ -23,6 +25,7 @@ namespace pwsoFunctions
             {
                 PropertyNameCaseInsensitive = true,
             };
+            Process process = new Process();
             RegistrantDb registrantDb = new RegistrantDb();
             try
             {
@@ -37,7 +40,7 @@ namespace pwsoFunctions
                 AddPhone(registrantMessage.Phone1, registrantMessage.Phone1Type, registrantMessage.CanText1, registrantDb);
                 AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
                 AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
-                
+
             }
             catch (Exception e)
             {
@@ -46,6 +49,7 @@ namespace pwsoFunctions
             }
 
             document = registrantDb;
+            process.SendRegistrationEmail(registrantDb);
 
         }
 
@@ -92,27 +96,27 @@ namespace pwsoFunctions
         public bool IsWaitListed { get; set; }
     }
 
-    public class RegistrantDb
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string NickName { get; set; }
-        public string Size { get; set; }
-        public int SportId { get; set; }
-        public int ProgramId { get; set; }
-        public List<string> Emails { get; set; }
-        public List<RegistrantPhone> Phones{ get; set; }
-        public string Sport { get; set; }
-        public string ProgramName { get; set; }
-        public bool IsVolunteer { get; set; }
-        public bool IsWaitListed { get; set; }
-    }
+    //public class RegistrantDb
+    //{
+    //    public int Id { get; set; }
+    //    public string FirstName { get; set; }
+    //    public string LastName { get; set; }
+    //    public string NickName { get; set; }
+    //    public string Size { get; set; }
+    //    public int SportId { get; set; }
+    //    public int ProgramId { get; set; }
+    //    public List<string> Emails { get; set; }
+    //    public List<RegistrantPhone> Phones{ get; set; }
+    //    public string Sport { get; set; }
+    //    public string ProgramName { get; set; }
+    //    public bool IsVolunteer { get; set; }
+    //    public bool IsWaitListed { get; set; }
+    //}
 
-    public class RegistrantPhone
-    {
-        public string Phone { get; set; }
-        public string PhoneType { get; set; }
-        public bool CanText { get; set; }
-    }
+    //public class RegistrantPhone
+    //{
+    //    public string Phone { get; set; }
+    //    public string PhoneType { get; set; }
+    //    public bool CanText { get; set; }
+    //}
 }
