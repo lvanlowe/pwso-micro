@@ -4,6 +4,6 @@ C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\bin\Debug
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.csprojAssemblyReference.cache
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.AssemblyInfoInputs.cache
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.AssemblyInfo.cs
-C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.csproj.CoreCompileInputs.cache
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.dll
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.pdb
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoProcesses\obj\Debug\netcoreapp3.1\pwsoProcesses.csproj.CoreCompileInputs.cache

@@ -19,6 +19,7 @@ namespace pwsoProcesses.Models
         public string ProgramName { get; set; }
         public bool IsVolunteer { get; set; }
         public bool IsWaitListed { get; set; }
+        public string Sender { get; set; }
     }
 
 }
