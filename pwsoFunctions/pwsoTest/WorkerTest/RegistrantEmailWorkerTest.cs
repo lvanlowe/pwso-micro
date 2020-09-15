@@ -91,5 +91,22 @@ namespace pwsoTest.WorkerTest
             Assert.Equal("Dick (Robin) Grayson is registered for Track", _message.Subject);
         }
 
+        [Fact]
+        public void BuildEmailBodyTest_no_nickName_no_location_formated_name_sport_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false};
+            _worker = new RegistrantEmailWorker(_message, registrant);
+            _worker.BuildEmailBody();
+            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick Grayson has been successfully registered as an athlete for Track.", _message.HtmlContent);
+        }
+
+        [Fact]
+        public void BuildEmailBodyTest_nickName_location_formated_name_sport_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true};
+            _worker = new RegistrantEmailWorker(_message, registrant);
+            _worker.BuildEmailBody();
+            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been successfully registered as an volunteer for Track at Gainesville.", _message.HtmlContent);
+        }
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using pwsoProcesses;
 using pwsoProcesses.Models;
+using pwsoProcesses.Workers;
 using SendGrid.Helpers.Mail;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -29,11 +30,8 @@ namespace pwsoFunctions
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
                 var message = new SendGridMessage();
-                message.AddTo(registrantDb.Emails[0]);
-                message.AddContent("text/html", "This is a new test");
-                message.SetFrom(new EmailAddress("webmaster@pwsova.org"));
-                message.SetSubject("Registrant has been added");
-                await messageCollector.AddAsync(message);
+                var worker = new RegistrantEmailWorker(message, registrantDb);
+                await messageCollector.AddAsync(worker.PrepareRegistrationEmail());
 
             }
             catch (Exception e)

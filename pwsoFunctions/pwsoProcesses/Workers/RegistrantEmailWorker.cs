@@ -16,6 +16,15 @@ namespace pwsoProcesses.Workers
             _registrant = registrant;
         }
 
+        public SendGridMessage PrepareRegistrationEmail()
+        {
+            BuildEmailFrom();
+            BuildEmailTo();
+            BuildEmailSubject();
+            BuildEmailBody();
+            return _message;
+        }
+
         public void BuildEmailTo()
         {
             List<EmailAddress> emailAddresses = new List<EmailAddress>();
@@ -42,18 +51,45 @@ namespace pwsoProcesses.Workers
 
         public void BuildEmailSubject()
         {
-            string subject = _registrant.FirstName + " ";
-            if (!string.IsNullOrEmpty(_registrant.NickName))
-            {
-                subject += "(" + _registrant.NickName + ") ";
-            }
-            subject += _registrant.LastName + " is registered for ";
+            var name = FormatName();
+            var subject = name + " is registered for ";
             subject += _registrant.Sport;
-
             _message.Subject = subject;
         }
 
+        public void BuildEmailBody()
+        {
+            var name = FormatName();
+            var body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            body += name;
+            body += " has been successfully registered as an";
+            if (_registrant.IsVolunteer)
+            {
+                body += " volunteer for ";
+            }
+            else
+            {
+                body += " athlete for ";
+            }
+            body += _registrant.Sport;
+            if (!string.IsNullOrEmpty(_registrant.ProgramName))
+            {
+                body += " at " + _registrant.ProgramName;
+            }
+            body += ".";
+            _message.HtmlContent = body;
+        }
 
+        private string FormatName()
+        {
+            var name = _registrant.FirstName + " ";
+            if (!string.IsNullOrEmpty(_registrant.NickName))
+            {
+                name += "(" + _registrant.NickName + ") ";
+            }
 
+            name += _registrant.LastName;
+            return name;
+        }
     }
 }
