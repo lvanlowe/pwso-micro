@@ -9,11 +9,11 @@ namespace pwsoProcesses
 {
     public class Process
     {
-        public void SendRegistrationEmail(RegistrantDb registrant)
+        public void SendRegistrationEmail(RegistrantDb registrant, string url)
         {
             var registrantDb = JsonSerializer.Serialize<RegistrantDb>(registrant);
             var client = new HttpClient();
-            _ = client.PostAsync("http://localhost:7071/api/SendRegistrationEmailFunc", new StringContent(registrantDb, Encoding.UTF8, "application/json"));
+            _ = client.PostAsync(url, new StringContent(registrantDb, Encoding.UTF8, "application/json"));
             var name = registrant.FirstName;
         }
     }

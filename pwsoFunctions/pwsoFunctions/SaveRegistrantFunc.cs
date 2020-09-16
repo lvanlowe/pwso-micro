@@ -26,6 +26,7 @@ namespace pwsoFunctions
                 PropertyNameCaseInsensitive = true,
             };
             Process process = new Process();
+            var emailUrl = System.Environment.GetEnvironmentVariable("EmailUrl");
             RegistrantDb registrantDb = new RegistrantDb();
             try
             {
@@ -49,7 +50,7 @@ namespace pwsoFunctions
             }
 
             document = registrantDb;
-            process.SendRegistrationEmail(registrantDb);
+            process.SendRegistrationEmail(registrantDb, emailUrl);
 
         }
 
