@@ -4,6 +4,7 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="AddRegistrantEmailFunc.cs" />
     <Compile Remove="AddRegistrantSqlFunc.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -15,7 +15,7 @@ namespace pwsoFunctions
         [FunctionName("SaveRegistrantFunc")]
         public static void Run([QueueTrigger("registrant", Connection = "AzureWebJobsStorage")]string myQueueItem,
                         [CosmosDB(
-                databaseName: "TalkingBook",
+                databaseName: "pwso",
                 collectionName: "registrant",
                 ConnectionStringSetting = "CosmosDBConnection")]out dynamic document,
             ILogger log)
