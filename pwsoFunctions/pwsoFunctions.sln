@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pwsoFunctions", "pwsoFuncti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pwsoProcesses", "pwsoProcesses\pwsoProcesses.csproj", "{A6367C25-E1F0-4851-9F22-CD9D4F5B22F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pwsoTest", "pwsoTest\pwsoTest.csproj", "{20BCC759-0CD1-4611-9153-C0272D256062}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pwsoTest", "pwsoTest\pwsoTest.csproj", "{20BCC759-0CD1-4611-9153-C0272D256062}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
