@@ -100,3 +100,7 @@ C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\obj\Debug\netc
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\obj\Debug\netcoreapp3.1\pwsoTest.dll
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\obj\Debug\netcoreapp3.1\pwsoTest.pdb
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\obj\Debug\netcoreapp3.1\pwsoTest.genruntimeconfig.cache
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Logging.dll
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Tokens.dll
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Twilio.dll

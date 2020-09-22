@@ -29,14 +29,15 @@ namespace pwsoFunctions
             log.LogInformation("C# HTTP trigger function processed a request.");
             try
             {
-                var toNumber = "+17033146512";
-                var message = new CreateMessageOptions(new PhoneNumber(toNumber))
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
+                var worker = new RegistrantMessageWorker(registrantDb, System.Environment.GetEnvironmentVariable("FromPhone"));
+
+                var textMessageList = worker.PrepareRegistrationText();
+                foreach (var textMessage in textMessageList)
                 {
-                    From = new PhoneNumber(System.Environment.GetEnvironmentVariable("FromPhone")),
-                    Body = "This is a test",
-                    
-                };
-                await messages.AddAsync(message);
+                    await messages.AddAsync(textMessage);
+                }
             }
             catch (Exception e)
             {

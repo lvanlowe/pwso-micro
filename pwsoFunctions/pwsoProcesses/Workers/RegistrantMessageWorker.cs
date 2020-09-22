@@ -3,17 +3,27 @@ using System.Collections.Generic;
 using System.Text;
 using pwsoProcesses.Models;
 using SendGrid.Helpers.Mail;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace pwsoProcesses.Workers
 {
-    public class RegistrantEmailWorker
+    public class RegistrantMessageWorker
     {
         private SendGridMessage _message;
         private RegistrantDb _registrant;
-        public RegistrantEmailWorker(SendGridMessage message, RegistrantDb registrant)
+        private List<CreateMessageOptions> _textMessageList;
+        private string _fromNumber;
+        public RegistrantMessageWorker(SendGridMessage message, RegistrantDb registrant)
         {
             _message = message;
             _registrant = registrant;
+        }
+
+        public RegistrantMessageWorker(RegistrantDb registrant, string fromNumber)
+        {
+            _registrant = registrant;
+            _fromNumber = fromNumber;
         }
 
         public SendGridMessage PrepareRegistrationEmail()
@@ -59,8 +69,14 @@ namespace pwsoProcesses.Workers
 
         public void BuildEmailBody()
         {
-            var name = FormatName();
             var body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            var message = BuildMessage(body);
+            _message.HtmlContent = message;
+        }
+
+        private string BuildMessage(string body)
+        {
+            var name = FormatName();
             body += name;
             body += " has been successfully registered as an";
             if (_registrant.IsVolunteer)
@@ -71,13 +87,15 @@ namespace pwsoProcesses.Workers
             {
                 body += " athlete for ";
             }
+
             body += _registrant.Sport;
             if (!string.IsNullOrEmpty(_registrant.ProgramName))
             {
                 body += " at " + _registrant.ProgramName;
             }
+
             body += ".";
-            _message.HtmlContent = body;
+            return body;
         }
 
         private string FormatName()
@@ -90,6 +108,41 @@ namespace pwsoProcesses.Workers
 
             name += _registrant.LastName;
             return name;
+        }
+
+        public List<CreateMessageOptions> PrepareRegistrationText()
+        {
+            var phoneList = BuildPhoneList();
+            return BuildPhoneMessageList(phoneList);
+        }
+
+        public List<string> BuildPhoneList()
+        {
+            var phoneList = new List<string>();
+            foreach (var phone in _registrant.Phones)
+            {
+                if (phone.CanText)
+                {
+                    phoneList.Add("+1" + phone.Phone);
+                }
+            }
+
+            return phoneList;
+        }
+
+        public List<CreateMessageOptions> BuildPhoneMessageList(List<string> phoneList)
+        {
+            _textMessageList = new List<CreateMessageOptions>();
+            foreach (var phone in phoneList)
+            {
+                var message = new CreateMessageOptions(new PhoneNumber(phone))
+                {
+                    From = new PhoneNumber(_fromNumber),
+                    Body = BuildMessage(string.Empty),
+                };
+                _textMessageList.Add(message);
+            }
+            return _textMessageList;
         }
     }
 }

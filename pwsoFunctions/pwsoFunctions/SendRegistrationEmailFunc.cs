@@ -30,7 +30,7 @@ namespace pwsoFunctions
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
                 var message = new SendGridMessage();
-                var worker = new RegistrantEmailWorker(message, registrantDb);
+                var worker = new RegistrantMessageWorker(message, registrantDb);
                 await messageCollector.AddAsync(worker.PrepareRegistrationEmail());
 
             }
