@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\SMADTools\InformationService\InformationService\InformationService.csproj" />
     <ProjectReference Include="..\pwsoProcesses\pwsoProcesses.csproj" />
   </ItemGroup>
   <ItemGroup>
