@@ -27,6 +27,7 @@ namespace pwsoFunctions
             };
             Process process = new Process();
             var emailUrl = System.Environment.GetEnvironmentVariable("EmailUrl");
+            var phoneUrl = System.Environment.GetEnvironmentVariable("PhoneUrl");
             RegistrantDb registrantDb = new RegistrantDb();
             try
             {
@@ -50,8 +51,8 @@ namespace pwsoFunctions
             }
 
             document = registrantDb;
-            process.SendRegistrationEmail(registrantDb, emailUrl);
-
+            process.SendRegistrationNotification(registrantDb, emailUrl);
+            process.SendRegistrationNotification(registrantDb, phoneUrl);
         }
 
         private static void AddPhone(string phone, string phoneType, bool canText, RegistrantDb registrantDb)
