@@ -276,5 +276,38 @@ namespace pwsoTest.WorkerTest
             Assert.Equal("Dick Grayson has been successfully registered as an athlete for Track.", actual[0].Body);
 
         }
+
+        [Fact]
+        public void BuildRegistantModelTest_1_Email_1_Phone_check_regrant_fields()
+        {
+            var registrant = new RegistrantDb
+            {
+                Emails = new List<string> { "superman@dc.com" },
+                FirstName = "Dick",
+                LastName = "Grayson",
+                Sport = "Track",
+                IsVolunteer = false,
+                ProgramName = "Woodbridge",
+                SportId = 8,
+                ProgramId = 11,
+                Size = "small",
+            };
+
+            registrant.Phones = new List<RegistrantPhone>();
+            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+
+
+            _worker = new RegistrantMessageWorker(registrant);
+            var actual = _worker.BuildRegistrant();
+            Assert.Equal(registrant.FirstName, actual.FirstName);
+            Assert.Equal(registrant.LastName, actual.LastName);
+            Assert.Equal(0, actual.Id);
+            Assert.Equal(registrant.IsVolunteer, actual.IsVolunteer);
+            Assert.Equal(registrant.ProgramId, actual.ProgramId);
+            Assert.Equal(registrant.Size, actual.Size);
+            Assert.Equal(registrant.SportId, actual.SportId);
+            Assert.Equal(registrant.ProgramId, actual.ProgramId);
+            Assert.Equal(registrant.FirstName, actual.FirstName);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using InformationService.Models;
 using pwsoProcesses.Models;
 using SendGrid.Helpers.Mail;
 using Twilio.Rest.Api.V2010.Account;
@@ -24,6 +25,11 @@ namespace pwsoProcesses.Workers
         {
             _registrant = registrant;
             _fromNumber = fromNumber;
+        }
+
+        public RegistrantMessageWorker(RegistrantDb registrant)
+        {
+            _registrant = registrant;
         }
 
         public SendGridMessage PrepareRegistrationEmail()
@@ -143,6 +149,17 @@ namespace pwsoProcesses.Workers
                 _textMessageList.Add(message);
             }
             return _textMessageList;
+        }
+
+        public Registrant BuildRegistrant()
+        {
+            Registrant registrant = new Registrant
+            {
+                FirstName = _registrant.FirstName
+            };
+
+
+            return registrant;
         }
     }
 }

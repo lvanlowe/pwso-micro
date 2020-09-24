@@ -24,7 +24,6 @@ namespace pwsoFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            log.LogInformation("C# HTTP trigger function processed a request.");
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
