@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using pwsoProcesses.Models;
+using pwsoProcesses.Workers;
 
 namespace pwsoFunctions
 {
@@ -28,10 +29,13 @@ namespace pwsoFunctions
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
+                var worker = new RegistrantMessageWorker(registrantDb);
+                var registrantSQL = worker.BuildRegistrant();
                 var connectionString = System.Environment.GetEnvironmentVariable("SQLAZURECONNSTR_TrainingModel");
                 var options = new DbContextOptionsBuilder<PwsodbContext>().UseSqlServer(connectionString ?? throw new InvalidOperationException()).Options;
                 var context = new PwsodbContext(options);
                 ITrainingRepository trainingRepository = new TrainingRepository(context);
+                await trainingRepository.AddRegistrant(registrantSQL);
 
             }
             catch (Exception e)

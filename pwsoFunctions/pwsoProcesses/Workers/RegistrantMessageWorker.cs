@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using InformationService.Models;
 using pwsoProcesses.Models;
@@ -11,10 +12,10 @@ namespace pwsoProcesses.Workers
 {
     public class RegistrantMessageWorker
     {
-        private SendGridMessage _message;
-        private RegistrantDb _registrant;
+        private readonly SendGridMessage _message;
+        private readonly RegistrantDb _registrant;
         private List<CreateMessageOptions> _textMessageList;
-        private string _fromNumber;
+        private readonly string _fromNumber;
         public RegistrantMessageWorker(SendGridMessage message, RegistrantDb registrant)
         {
             _message = message;
@@ -43,11 +44,7 @@ namespace pwsoProcesses.Workers
 
         public void BuildEmailTo()
         {
-            List<EmailAddress> emailAddresses = new List<EmailAddress>();
-            foreach (var email in _registrant.Emails)
-            {
-                emailAddresses.Add(new EmailAddress(email));
-            }
+            var emailAddresses = _registrant.Emails.Select(email => new EmailAddress(email)).ToList();
             _message.AddTos(emailAddresses);
         }
 
@@ -75,7 +72,7 @@ namespace pwsoProcesses.Workers
 
         public void BuildEmailBody()
         {
-            var body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            const string body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
             var message = BuildMessage(body);
             _message.HtmlContent = message;
         }
@@ -124,28 +121,18 @@ namespace pwsoProcesses.Workers
 
         public List<string> BuildPhoneList()
         {
-            var phoneList = new List<string>();
-            foreach (var phone in _registrant.Phones)
-            {
-                if (phone.CanText)
-                {
-                    phoneList.Add("+1" + phone.Phone);
-                }
-            }
-
-            return phoneList;
+            return (from phone in _registrant.Phones where phone.CanText select "+1" + phone.Phone).ToList();
         }
 
         public List<CreateMessageOptions> BuildPhoneMessageList(List<string> phoneList)
         {
             _textMessageList = new List<CreateMessageOptions>();
-            foreach (var phone in phoneList)
+            foreach (var message in phoneList.Select(phone => new CreateMessageOptions(new PhoneNumber(phone))
             {
-                var message = new CreateMessageOptions(new PhoneNumber(phone))
-                {
-                    From = new PhoneNumber(_fromNumber),
-                    Body = BuildMessage(string.Empty),
-                };
+                From = new PhoneNumber(_fromNumber),
+                Body = BuildMessage(string.Empty),
+            }))
+            {
                 _textMessageList.Add(message);
             }
             return _textMessageList;
@@ -153,11 +140,33 @@ namespace pwsoProcesses.Workers
 
         public Registrant BuildRegistrant()
         {
-            Registrant registrant = new Registrant
+            var registrant = new Registrant
             {
-                FirstName = _registrant.FirstName
+                FirstName = _registrant.FirstName,
+                LastName = _registrant.LastName,
+                IsVolunteer = _registrant.IsVolunteer,
+                ProgramId = _registrant.ProgramId,
+                Size = _registrant.Size,
+                SportId = _registrant.SportId,
+                NickName = _registrant.NickName,
+                RegistrantEmail = new List<RegistrantEmail>(),
+                RegistrantPhone = new List<InformationService.Models.RegistrantPhone>()
             };
 
+            foreach (var email in _registrant.Emails)
+            {
+                registrant.RegistrantEmail.Add(new RegistrantEmail{Email = email});
+            }
+
+            foreach (var phone in _registrant.Phones)
+            {
+                registrant.RegistrantPhone.Add(new InformationService.Models.RegistrantPhone
+                {
+                    CanText = phone.CanText,
+                    Phone = phone.Phone,
+                    PhoneType = phone.PhoneType
+                });
+            }
 
             return registrant;
         }

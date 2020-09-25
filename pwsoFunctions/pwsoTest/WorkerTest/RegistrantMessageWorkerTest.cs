@@ -306,8 +306,95 @@ namespace pwsoTest.WorkerTest
             Assert.Equal(registrant.ProgramId, actual.ProgramId);
             Assert.Equal(registrant.Size, actual.Size);
             Assert.Equal(registrant.SportId, actual.SportId);
-            Assert.Equal(registrant.ProgramId, actual.ProgramId);
-            Assert.Equal(registrant.FirstName, actual.FirstName);
+            Assert.Equal(registrant.NickName, actual.NickName);
         }
+
+        [Fact]
+        public void BuildRegistantModelTest_1_Email_1_Phone_check_email()
+        {
+            var registrant = new RegistrantDb
+            {
+                Emails = new List<string> { "superman@dc.com" },
+                FirstName = "Dick",
+                LastName = "Grayson",
+                Sport = "Track",
+                IsVolunteer = false,
+                ProgramName = "Woodbridge",
+                SportId = 8,
+                ProgramId = 11,
+                Size = "small",
+            };
+
+            registrant.Phones = new List<RegistrantPhone>();
+            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+
+
+            _worker = new RegistrantMessageWorker(registrant);
+            var actual = _worker.BuildRegistrant();
+            Assert.Equal(1, actual.RegistrantEmail.Count);
+        }
+
+        [Fact]
+        public void BuildRegistantModelTest_1_Email_1_Phone_check_phone()
+        {
+            var registrant = new RegistrantDb
+            {
+                Emails = new List<string> { "superman@dc.com" },
+                FirstName = "Dick",
+                LastName = "Grayson",
+                Sport = "Track",
+                IsVolunteer = false,
+                ProgramName = "Woodbridge",
+                SportId = 8,
+                ProgramId = 11,
+                Size = "small",
+            };
+
+            registrant.Phones = new List<RegistrantPhone>();
+            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+
+
+            _worker = new RegistrantMessageWorker(registrant);
+            var actual = _worker.BuildRegistrant();
+            Assert.Equal(1, actual.RegistrantPhone.Count);
+        }
+
+        [Fact]
+        public void BuildRegistantModelTest_2_Email_3_Phone_check_regrant_fields()
+        {
+            var registrant = new RegistrantDb
+            {
+                Emails = new List<string> { "superman@dc.com" },
+                FirstName = "Dick",
+                LastName = "Grayson",
+                Sport = "Track",
+                IsVolunteer = true,
+                ProgramName = "Woodbridge",
+                SportId = 8,
+                ProgramId = 11,
+                NickName = "Robin"
+            };
+
+            registrant.Phones = new List<RegistrantPhone>();
+            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+            registrant.Emails.Add("batman@dc.com");
+
+            _worker = new RegistrantMessageWorker(registrant);
+            var actual = _worker.BuildRegistrant();
+            Assert.Equal(registrant.FirstName, actual.FirstName);
+            Assert.Equal(registrant.LastName, actual.LastName);
+            Assert.Equal(0, actual.Id);
+            Assert.Equal(registrant.IsVolunteer, actual.IsVolunteer);
+            Assert.Equal(registrant.ProgramId, actual.ProgramId);
+            Assert.Equal(registrant.Size, actual.Size);
+            Assert.Equal(registrant.SportId, actual.SportId);
+            Assert.Equal(registrant.NickName, actual.NickName);
+            Assert.Equal(3, actual.RegistrantPhone.Count);
+            Assert.Equal(2, actual.RegistrantEmail.Count);
+
+        }
+
     }
 }
