@@ -27,6 +27,8 @@ namespace pwsoFunctions
             };
             Process process = new Process();
             var emailUrl = System.Environment.GetEnvironmentVariable("EmailUrl");
+            var phoneUrl = System.Environment.GetEnvironmentVariable("PhoneUrl");
+            var trainingUrl = System.Environment.GetEnvironmentVariable("TrainingUrl");
             RegistrantDb registrantDb = new RegistrantDb();
             try
             {
@@ -41,6 +43,7 @@ namespace pwsoFunctions
                 AddPhone(registrantMessage.Phone1, registrantMessage.Phone1Type, registrantMessage.CanText1, registrantDb);
                 AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
                 AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
+                process.SendRegistrationNotification(registrantDb, trainingUrl);
 
             }
             catch (Exception e)
@@ -50,8 +53,8 @@ namespace pwsoFunctions
             }
 
             document = registrantDb;
-            process.SendRegistrationEmail(registrantDb, emailUrl);
-
+            process.SendRegistrationNotification(registrantDb, emailUrl);
+            process.SendRegistrationNotification(registrantDb, phoneUrl);
         }
 
         private static void AddPhone(string phone, string phoneType, bool canText, RegistrantDb registrantDb)

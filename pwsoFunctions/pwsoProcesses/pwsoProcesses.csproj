@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Sendgrid" Version="9.9.0" />
+    <PackageReference Include="Twilio" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SMADTools\InformationService\InformationService\InformationService.csproj" />
   </ItemGroup>
 
 </Project>
