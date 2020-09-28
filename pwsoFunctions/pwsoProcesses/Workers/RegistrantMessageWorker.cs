@@ -36,6 +36,7 @@ namespace pwsoProcesses.Workers
         public SendGridMessage PrepareRegistrationEmail()
         {
             BuildEmailFrom();
+            BuildEmailCopy();
             BuildEmailTo();
             BuildEmailSubject();
             BuildEmailBody();
@@ -61,6 +62,12 @@ namespace pwsoProcesses.Workers
             }
 
         }
+
+        public void BuildEmailCopy()
+        {
+            _message.AddCc(_message.From.Email);
+        }
+
 
         public void BuildEmailSubject()
         {
@@ -170,5 +177,6 @@ namespace pwsoProcesses.Workers
 
             return registrant;
         }
+
     }
 }
