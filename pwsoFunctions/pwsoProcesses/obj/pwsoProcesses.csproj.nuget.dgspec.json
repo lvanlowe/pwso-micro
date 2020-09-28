@@ -49,11 +49,11 @@
           "dependencies": {
             "Sendgrid": {
               "target": "Package",
-              "version": "[9.9.0, )"
+              "version": "[9.21.0, )"
             },
             "Twilio": {
               "target": "Package",
-              "version": "[5.6.3, )"
+              "version": "[5.47.1, )"
             }
           },
           "imports": [
@@ -116,23 +116,19 @@
           "dependencies": {
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
-              "version": "[2.2.3, )"
+              "version": "[3.1.8, )"
             },
             "Microsoft.EntityFrameworkCore.Tools": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers",
               "suppressParent": "All",
               "target": "Package",
-              "version": "[2.2.3, )"
+              "version": "[3.1.8, )"
             },
             "Microsoft.NETCore.App": {
               "suppressParent": "All",
               "target": "Package",
               "version": "[2.1.0, )",
               "autoReferenced": true
-            },
-            "WindowsAzure.Storage": {
-              "target": "Package",
-              "version": "[9.3.3, )"
             }
           },
           "imports": [
