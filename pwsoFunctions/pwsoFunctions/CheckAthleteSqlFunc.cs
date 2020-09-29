@@ -30,10 +30,10 @@ namespace pwsoFunctions
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
-                var connectionString = System.Environment.GetEnvironmentVariable("SQLCONNSTR_OrganizationModel");
-                var options = new DbContextOptionsBuilder<PwsoContext>().UseSqlServer(connectionString ?? throw new InvalidOperationException()).Options;
-                var context = new PwsoContext(options);
-                IOrganizationRepository organizationRepository = new OrganizationRepository(context);
+                var organizationConnectionString = System.Environment.GetEnvironmentVariable("SQLCONNSTR_OrganizationModel");
+                var organizationOptions = new DbContextOptionsBuilder<PwsoContext>().UseSqlServer(organizationConnectionString ?? throw new InvalidOperationException()).Options;
+                var organizationContext = new PwsoContext(organizationOptions);
+                IOrganizationRepository organizationRepository = new OrganizationRepository(organizationContext);
                 athlete = await organizationRepository.FindAthleteByName(registrantDb.FirstName, registrantDb.LastName);
 
             }

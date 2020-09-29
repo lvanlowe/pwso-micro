@@ -32,6 +32,7 @@ namespace pwsoFunctions
             var trainingUrl = System.Environment.GetEnvironmentVariable("TrainingUrl");
             try
             {
+
                 var registrantMessage = JsonSerializer.Deserialize<RegistrantMessage>(myQueueItem, options);
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(myQueueItem, options);
                 registrantDb.Emails = new List<string>();

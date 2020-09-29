@@ -29,12 +29,17 @@ namespace pwsoFunctions
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
+                var organizationConnectionString = System.Environment.GetEnvironmentVariable("SQLCONNSTR_OrganizationModel");
+                var organizationOptions = new DbContextOptionsBuilder<PwsoContext>().UseSqlServer(organizationConnectionString ?? throw new InvalidOperationException()).Options;
+                var organizationContext = new PwsoContext(organizationOptions);
+                IOrganizationRepository organizationRepository = new OrganizationRepository(organizationContext);
+                var athlete = await organizationRepository.FindAthleteByName(registrantDb.FirstName, registrantDb.LastName);
                 var worker = new RegistrantMessageWorker(registrantDb);
                 var registrantSQL = worker.BuildRegistrant();
-                var connectionString = System.Environment.GetEnvironmentVariable("SQLAZURECONNSTR_TrainingModel");
-                var options = new DbContextOptionsBuilder<PwsodbContext>().UseSqlServer(connectionString ?? throw new InvalidOperationException()).Options;
-                var context = new PwsodbContext(options);
-                ITrainingRepository trainingRepository = new TrainingRepository(context);
+                var trainingConnectionString = System.Environment.GetEnvironmentVariable("SQLAZURECONNSTR_TrainingModel");
+                var trainingOptions = new DbContextOptionsBuilder<PwsodbContext>().UseSqlServer(trainingConnectionString ?? throw new InvalidOperationException()).Options;
+                var trainingContext = new PwsodbContext(trainingOptions);
+                ITrainingRepository trainingRepository = new TrainingRepository(trainingContext);
                 await trainingRepository.AddRegistrant(registrantSQL);
 
             }
