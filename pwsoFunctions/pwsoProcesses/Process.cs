@@ -21,8 +21,7 @@ namespace pwsoProcesses
         {
             var registrantDb = JsonSerializer.Serialize<RegistrantDb>(registrant);
             var client = new HttpClient();
-            HttpResponseMessage athlete = await client.PostAsync(url, new StringContent(registrantDb, Encoding.UTF8, "application/json"));
-
+            var athlete = await client.PostAsync(url, new StringContent(registrantDb, Encoding.UTF8, "application/json"));
             return athlete;
         }
 

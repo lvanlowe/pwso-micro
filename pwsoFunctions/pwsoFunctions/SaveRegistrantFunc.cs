@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading.Tasks;
+using InformationService.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using pwsoProcesses;
 using pwsoProcesses.Models;
+using RegistrantPhone = pwsoProcesses.RegistrantPhone;
 
 
 namespace pwsoFunctions
@@ -30,6 +32,7 @@ namespace pwsoFunctions
             var emailUrl = System.Environment.GetEnvironmentVariable("EmailUrl");
             var phoneUrl = System.Environment.GetEnvironmentVariable("PhoneUrl");
             var trainingUrl = System.Environment.GetEnvironmentVariable("TrainingUrl");
+            var athleteUrl = System.Environment.GetEnvironmentVariable("AthleteUrl");
             try
             {
 
@@ -45,6 +48,15 @@ namespace pwsoFunctions
                 AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
                 AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
                 process.SendRegistrationNotification(registrantDb, trainingUrl);
+                var athleteJob = await process.GetRegistrationAthlete(registrantDb, athleteUrl);
+                if (athleteJob.IsSuccessStatusCode)
+                {
+                    var result = athleteJob.Content.ReadAsStringAsync();
+                    var athlete = JsonSerializer.Deserialize<Athletes>(result.Result, options);
+                    registrantDb.AthleteId = athlete.Id;
+                    registrantDb.MedicalExpirationDate = athlete.MedicalExpirationDate;
+                }
+
                 await registrantDocuments.AddAsync(registrantDb);
                 process.SendRegistrationNotification(registrantDb, emailUrl);
                 process.SendRegistrationNotification(registrantDb, phoneUrl);
