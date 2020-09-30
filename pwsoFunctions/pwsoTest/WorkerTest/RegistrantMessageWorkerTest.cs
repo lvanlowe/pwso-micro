@@ -406,5 +406,63 @@ namespace pwsoTest.WorkerTest
 
         }
 
+        [Fact]
+        public void BuildRegistantModelTest_no_medical_check_no_athlete_fields()
+        {
+            var registrant = new RegistrantDb
+            {
+                Emails = new List<string> { "superman@dc.com" },
+                FirstName = "Dick",
+                LastName = "Grayson",
+                Sport = "Track",
+                IsVolunteer = true,
+                ProgramName = "Woodbridge",
+                SportId = 8,
+                ProgramId = 11,
+                NickName = "Robin"
+            };
+
+            registrant.Phones = new List<RegistrantPhone>();
+            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+            registrant.Emails.Add("batman@dc.com");
+
+            _worker = new RegistrantMessageWorker(registrant);
+            var actual = _worker.BuildRegistrant();
+            Assert.Equal(0, actual.RegisteredAthlete.Count);
+
+        }
+
+
+        [Fact]
+        public void BuildRegistantModelTest_medical_check_1_athlete_fields()
+        {
+            var registrant = new RegistrantDb
+            {
+                Emails = new List<string> { "superman@dc.com" },
+                FirstName = "Dick",
+                LastName = "Grayson",
+                Sport = "Track",
+                IsVolunteer = true,
+                ProgramName = "Woodbridge",
+                SportId = 8,
+                ProgramId = 11,
+                NickName = "Robin",
+                AthleteId = 123
+            };
+
+            registrant.Phones = new List<RegistrantPhone>();
+            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+            registrant.Emails.Add("batman@dc.com");
+
+            _worker = new RegistrantMessageWorker(registrant);
+            var actual = _worker.BuildRegistrant();
+            Assert.Equal(1, actual.RegisteredAthlete.Count);
+
+        }
+
     }
 }

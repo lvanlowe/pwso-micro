@@ -175,6 +175,11 @@ namespace pwsoProcesses.Workers
                 });
             }
 
+            if (_registrant.AthleteId > 0)
+            {
+                registrant.RegisteredAthlete.Add(new RegisteredAthlete{AthletesId = _registrant.AthleteId});
+            }
+
             return registrant;
         }
 

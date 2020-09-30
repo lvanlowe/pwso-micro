@@ -47,16 +47,18 @@ namespace pwsoFunctions
                 AddPhone(registrantMessage.Phone1, registrantMessage.Phone1Type, registrantMessage.CanText1, registrantDb);
                 AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
                 AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
-                process.SendRegistrationNotification(registrantDb, trainingUrl);
-                var athleteJob = await process.GetRegistrationAthlete(registrantDb, athleteUrl);
-                if (athleteJob.IsSuccessStatusCode)
+                if (!registrantDb.IsVolunteer)
                 {
-                    var result = athleteJob.Content.ReadAsStringAsync();
-                    var athlete = JsonSerializer.Deserialize<Athletes>(result.Result, options);
-                    registrantDb.AthleteId = athlete.Id;
-                    registrantDb.MedicalExpirationDate = athlete.MedicalExpirationDate;
-                }
-
+                    var athleteJob = await process.GetRegistrationAthlete(registrantDb, athleteUrl);
+                    if (athleteJob.IsSuccessStatusCode)
+                    {
+                        var result = athleteJob.Content.ReadAsStringAsync();
+                        var athlete = JsonSerializer.Deserialize<Athletes>(result.Result, options);
+                        registrantDb.AthleteId = athlete.Id;
+                        registrantDb.MedicalExpirationDate = athlete.MedicalExpirationDate;
+                    }
+                }                
+                process.SendRegistrationNotification(registrantDb, trainingUrl);
                 await registrantDocuments.AddAsync(registrantDb);
                 process.SendRegistrationNotification(registrantDb, emailUrl);
                 process.SendRegistrationNotification(registrantDb, phoneUrl);
