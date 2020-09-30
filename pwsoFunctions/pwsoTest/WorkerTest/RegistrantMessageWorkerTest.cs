@@ -92,6 +92,15 @@ namespace pwsoTest.WorkerTest
             _worker.BuildEmailSubject();
             Assert.Equal("Dick (Robin) Grayson is registered for Track", _message.Subject);
         }
+        [Fact]
+        public void BuildMedicalSubjectTest_nickName_formated_name_subject()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", NickName = "Robin" };
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _worker.BuildMedicalSubject();
+            Assert.Equal("Dick (Robin) Grayson medical missing for Track", _message.Subject);
+        }
+
 
         [Fact]
         public void BuildEmailBodyTest_no_nickName_no_location_formated_name_sport_body()
@@ -462,6 +471,27 @@ namespace pwsoTest.WorkerTest
             var actual = _worker.BuildRegistrant();
             Assert.Equal(1, actual.RegisteredAthlete.Count);
 
+        }
+
+        [Fact]
+        public void BuildEmailMedicalToTest_Found_Email_email_matches()
+        {
+            var registrant = new RegistrantDb { Emails = new List<string> { "superman@dc.com" } };
+
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _worker.MedicalEmail = "batman@dc.com";
+            _worker.BuildEmailMedicalTo();
+            Assert.Equal(_worker.MedicalEmail, _message.Personalizations[0].Tos[0].Email);
+        }
+
+        [Fact]
+        public void BuildEmailMedicalToTest_No_Found_Email_email_matches()
+        {
+            var registrant = new RegistrantDb { Emails = new List<string> { "superman@dc.com" } };
+
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _worker.BuildEmailMedicalTo();
+            Assert.Equal("webmaster@pwsova.org", _message.Personalizations[0].Tos[0].Email);
         }
 
     }

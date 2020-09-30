@@ -16,6 +16,7 @@ namespace pwsoProcesses.Workers
         private readonly RegistrantDb _registrant;
         private List<CreateMessageOptions> _textMessageList;
         private readonly string _fromNumber;
+        public string MedicalEmail { get; set; }
         public RegistrantMessageWorker(SendGridMessage message, RegistrantDb registrant)
         {
             _message = message;
@@ -49,6 +50,12 @@ namespace pwsoProcesses.Workers
             _message.AddTos(emailAddresses);
         }
 
+        public void BuildEmailMedicalTo()
+        {
+            _message.AddTo(string.IsNullOrEmpty(MedicalEmail) ? "webmaster@pwsova.org" : MedicalEmail);
+        }
+
+
         public void BuildEmailFrom()
         {
 
@@ -73,6 +80,14 @@ namespace pwsoProcesses.Workers
         {
             var name = FormatName();
             var subject = name + " is registered for ";
+            subject += _registrant.Sport;
+            _message.Subject = subject;
+        }
+
+        public void BuildMedicalSubject()
+        {
+            var name = FormatName();
+            var subject = name + " medical missing for ";
             subject += _registrant.Sport;
             _message.Subject = subject;
         }
@@ -182,6 +197,7 @@ namespace pwsoProcesses.Workers
 
             return registrant;
         }
+
 
     }
 }
