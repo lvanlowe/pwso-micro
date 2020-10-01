@@ -44,6 +44,17 @@ namespace pwsoProcesses.Workers
             return _message;
         }
 
+        public SendGridMessage PrepareMedicalEmail()
+        {
+            BuildEmailFrom();
+            BuildEmailCopy();
+            BuildEmailMedicalTo();
+            BuildMedicalSubject();
+            BuildMedicalEmailBody();
+            return _message;
+        }
+
+
         public void BuildEmailTo()
         {
             var emailAddresses = _registrant.Emails.Select(email => new EmailAddress(email)).ToList();
@@ -87,7 +98,7 @@ namespace pwsoProcesses.Workers
         public void BuildMedicalSubject()
         {
             var name = FormatName();
-            var subject = name + " medical missing for ";
+            var subject = name + " release form missing for ";
             subject += _registrant.Sport;
             _message.Subject = subject;
         }
@@ -98,6 +109,14 @@ namespace pwsoProcesses.Workers
             var message = BuildMessage(body);
             _message.HtmlContent = message;
         }
+
+        public void BuildMedicalEmailBody()
+        {
+            const string body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            var message = BuildMedicalMessage(body);
+            _message.HtmlContent = message;
+        }
+
 
         private string BuildMessage(string body)
         {
@@ -120,6 +139,21 @@ namespace pwsoProcesses.Workers
             }
 
             body += ".";
+            return body;
+        }
+
+        private string BuildMedicalMessage(string body)
+        {
+            var name = FormatName();
+            body += name;
+            body += " release form could not be verified automatically when registering for ";
+            body += _registrant.Sport;
+            if (!string.IsNullOrEmpty(_registrant.ProgramName))
+            {
+                body += " at " + _registrant.ProgramName;
+            }
+
+            body += ".<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Please verify manually.";
             return body;
         }
 

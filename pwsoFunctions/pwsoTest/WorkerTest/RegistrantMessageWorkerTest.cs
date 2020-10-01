@@ -98,7 +98,7 @@ namespace pwsoTest.WorkerTest
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", NickName = "Robin" };
             _worker = new RegistrantMessageWorker(_message, registrant);
             _worker.BuildMedicalSubject();
-            Assert.Equal("Dick (Robin) Grayson medical missing for Track", _message.Subject);
+            Assert.Equal("Dick (Robin) Grayson release form missing for Track", _message.Subject);
         }
 
 
@@ -119,6 +119,16 @@ namespace pwsoTest.WorkerTest
             _worker.BuildEmailBody();
             Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been successfully registered as an volunteer for Track at Gainesville.", _message.HtmlContent);
         }
+
+        [Fact]
+        public void BuildMedicalEmailBodyTest_nickName_location_formated_name_sport_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true };
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _worker.BuildMedicalEmailBody();
+            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form could not be verified automatically when registering for Track at Gainesville.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Please verify manually.", _message.HtmlContent);
+        }
+
 
         [Fact]
         public void BuildEmailCopyTest_from_eq_cc()
