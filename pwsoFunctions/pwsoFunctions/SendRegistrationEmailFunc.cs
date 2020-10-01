@@ -32,6 +32,13 @@ namespace pwsoFunctions
                 var message = new SendGridMessage();
                 var worker = new RegistrantMessageWorker(message, registrantDb);
                 await messageCollector.AddAsync(worker.PrepareRegistrationEmail());
+                if (!registrantDb.IsVolunteer && registrantDb.AthleteId == 0)
+                {
+                    var medMessage = new SendGridMessage();
+                    var medWorker = new RegistrantMessageWorker(medMessage, registrantDb);
+                    medWorker.MedicalEmail = System.Environment.GetEnvironmentVariable("MedicalEmail");
+                    await messageCollector.AddAsync(medWorker.PrepareMedicalEmail());
+                }
 
             }
             catch (Exception e)
