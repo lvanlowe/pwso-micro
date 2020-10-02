@@ -135,10 +135,23 @@ namespace pwsoTest.WorkerTest
         {
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true, Sender = "superman@dc.com" };
             _message.From = new EmailAddress(registrant.Sender);
+            _message.AddTo("batman@dc.com");
             _worker = new RegistrantMessageWorker(_message, registrant);
             _worker.BuildEmailCopy();
             Assert.Equal(registrant.Sender, _message.Personalizations[0].Ccs[0].Email);
         }
+
+        [Fact]
+        public void BuildEmailCopyTest_when_from_eq__to_no_cc()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true, Sender = "superman@dc.com" };
+            _message.From = new EmailAddress(registrant.Sender);
+            _message.AddTo(registrant.Sender);
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _worker.BuildEmailCopy();
+            Assert.Null(_message.Personalizations[0].Ccs);
+        }
+
 
         [Fact]
         public void BuildPhoneListTest_1_phone_0_text_0_list()

@@ -37,8 +37,8 @@ namespace pwsoProcesses.Workers
         public SendGridMessage PrepareRegistrationEmail()
         {
             BuildEmailFrom();
-            BuildEmailCopy();
             BuildEmailTo();
+            BuildEmailCopy();
             BuildEmailSubject();
             BuildEmailBody();
             return _message;
@@ -47,8 +47,8 @@ namespace pwsoProcesses.Workers
         public SendGridMessage PrepareMedicalEmail()
         {
             BuildEmailFrom();
-            BuildEmailCopy();
             BuildEmailMedicalTo();
+            BuildEmailCopy();
             BuildMedicalSubject();
             BuildMedicalEmailBody();
             return _message;
@@ -83,7 +83,16 @@ namespace pwsoProcesses.Workers
 
         public void BuildEmailCopy()
         {
-            _message.AddCc(_message.From.Email);
+            var emailFound = false;
+            foreach (var emailToAddress in _message.Personalizations[0].Tos.Where(emailToAddress => emailToAddress.Email == _message.From.Email))
+            {
+                emailFound = true;
+            }
+
+            if (!emailFound)
+            {
+                _message.AddCc(_message.From.Email);
+            }
         }
 
 

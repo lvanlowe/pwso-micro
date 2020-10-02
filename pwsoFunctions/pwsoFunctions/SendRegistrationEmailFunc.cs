@@ -27,7 +27,7 @@ namespace pwsoFunctions
             log.LogInformation("C# HTTP trigger function processed a request.");
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+                var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
                 var message = new SendGridMessage();
                 var worker = new RegistrantMessageWorker(message, registrantDb);
@@ -35,8 +35,10 @@ namespace pwsoFunctions
                 if (!registrantDb.IsVolunteer && registrantDb.AthleteId == 0)
                 {
                     var medMessage = new SendGridMessage();
-                    var medWorker = new RegistrantMessageWorker(medMessage, registrantDb);
-                    medWorker.MedicalEmail = System.Environment.GetEnvironmentVariable("MedicalEmail");
+                    var medWorker = new RegistrantMessageWorker(medMessage, registrantDb)
+                    {
+                        MedicalEmail = System.Environment.GetEnvironmentVariable("MedicalEmail")
+                    };
                     await messageCollector.AddAsync(medWorker.PrepareMedicalEmail());
                 }
 
