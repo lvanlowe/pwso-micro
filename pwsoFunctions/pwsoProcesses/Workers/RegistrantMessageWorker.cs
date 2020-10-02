@@ -131,14 +131,23 @@ namespace pwsoProcesses.Workers
         {
             var name = FormatName();
             body += name;
-            body += " has been successfully registered as an";
+            body += " has been";
             if (_registrant.IsVolunteer)
             {
+                body += " successfully registered as an";
                 body += " volunteer for ";
             }
             else
             {
-                body += " athlete for ";
+                if (_registrant.IsWaitListed)
+                {
+                    body += " placed on the waitlist for ";
+                }
+                else
+                {
+                    body += " successfully registered as an";
+                    body += " athlete for ";
+                }
             }
 
             body += _registrant.Sport;
@@ -147,7 +156,14 @@ namespace pwsoProcesses.Workers
                 body += " at " + _registrant.ProgramName;
             }
 
-            body += ".";
+            if (_registrant.IsWaitListed)
+            {
+                body += " and will be notified when the status changes.";
+            }
+            else
+            {
+                body += ".";
+            }
             return body;
         }
 

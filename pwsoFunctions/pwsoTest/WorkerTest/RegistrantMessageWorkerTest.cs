@@ -121,6 +121,15 @@ namespace pwsoTest.WorkerTest
         }
 
         [Fact]
+        public void BuildEmailBodyTest_nickName_location_formated_name_waitlist_sport_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, IsWaitListed = true};
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _worker.BuildEmailBody();
+            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been placed on the waitlist for Track at Gainesville and will be notified when the status changes.", _message.HtmlContent);
+        }
+
+        [Fact]
         public void BuildMedicalEmailBodyTest_nickName_location_formated_name_sport_body()
         {
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true };
