@@ -119,6 +119,12 @@ namespace pwsoProcesses.Workers
             _message.HtmlContent = message;
         }
 
+        public void BuildAthleteMedicalEmailBody()
+        {
+
+        }
+
+
         public void BuildMedicalEmailBody()
         {
             const string body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";

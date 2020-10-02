@@ -138,11 +138,54 @@ namespace pwsoTest.WorkerTest
             Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form could not be verified automatically when registering for Track at Gainesville.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Please verify manually.", _message.HtmlContent);
         }
 
+        [Fact]
+        public void BuildAthleteMedicalEmailBodyTest_no_medical_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, AthleteId = 0};
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _message.HtmlContent = "test";
+            _worker.BuildAthleteMedicalEmailBody();
+            Assert.Equal("test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form could not be verified automatically and therefore needs to be checked manually we will connect you to let you if there is anything you need to do before this athlete can participate.", _message.HtmlContent);
+        }
+
+        [Fact]
+        public void BuildAthleteMedicalEmailBodyTest_good_medical_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, AthleteId = 25};
+            registrant.MedicalExpirationDate = DateTime.Now.AddYears(1);
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _message.HtmlContent = "test";
+            _worker.BuildAthleteMedicalEmailBody();
+            Assert.Equal("test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form has been verified and is up to date, therefore can participate.", _message.HtmlContent);
+        }
+
+        [Fact]
+        public void BuildAthleteMedicalEmailBodyTest_expired_medical_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, AthleteId = 25 };
+            registrant.MedicalExpirationDate = DateTime.Now.AddYears(-1);
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _message.HtmlContent = "test";
+            _worker.BuildAthleteMedicalEmailBody();
+            Assert.Equal("test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form had expired on 12/12/1990. The athletes release needs to be updated before they can participate.", _message.HtmlContent);
+        }
+
+        [Fact]
+        public void BuildAthleteMedicalEmailBodyTest_expiring_medical_body()
+        {
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, AthleteId = 25 };
+            registrant.MedicalExpirationDate = DateTime.Now.AddMonths(1);
+            _worker = new RegistrantMessageWorker(_message, registrant);
+            _message.HtmlContent = "test";
+            _worker.BuildAthleteMedicalEmailBody();
+            Assert.Equal("test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form has been verified and is up to date, therefore can participate. However, this athletes form will be expiring on 12/12/2020, please update before it expires.", _message.HtmlContent);
+        }
+
 
         [Fact]
         public void BuildEmailCopyTest_from_eq_cc()
         {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true, Sender = "superman@dc.com" };
+            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, Sender = "superman@dc.com", AthleteId = 0};
             _message.From = new EmailAddress(registrant.Sender);
             _message.AddTo("batman@dc.com");
             _worker = new RegistrantMessageWorker(_message, registrant);
