@@ -10,21 +10,22 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using Newtonsoft.Json;
 using pwsoProcesses.Models;
 using pwsoProcesses.Workers;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace pwsoFunctions
 {
-    public static class SendRegistrationSqlFunc
+    public static class CheckAthleteSqlFunc
     {
-        [FunctionName("SendRegistrationSqlFunc")]
+        [FunctionName("CheckAthleteSqlFunc")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-
+            Athletes athlete;
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -33,14 +34,7 @@ namespace pwsoFunctions
                 var organizationOptions = new DbContextOptionsBuilder<PwsoContext>().UseSqlServer(organizationConnectionString ?? throw new InvalidOperationException()).Options;
                 var organizationContext = new PwsoContext(organizationOptions);
                 IOrganizationRepository organizationRepository = new OrganizationRepository(organizationContext);
-                var athlete = await organizationRepository.FindAthleteByName(registrantDb.FirstName, registrantDb.LastName);
-                var worker = new RegistrantMessageWorker(registrantDb);
-                var registrantSQL = worker.BuildRegistrant();
-                var trainingConnectionString = System.Environment.GetEnvironmentVariable("SQLAZURECONNSTR_TrainingModel");
-                var trainingOptions = new DbContextOptionsBuilder<PwsodbContext>().UseSqlServer(trainingConnectionString ?? throw new InvalidOperationException()).Options;
-                var trainingContext = new PwsodbContext(trainingOptions);
-                ITrainingRepository trainingRepository = new TrainingRepository(trainingContext);
-                await trainingRepository.AddRegistrant(registrantSQL);
+                athlete = await organizationRepository.FindAthleteByName(registrantDb.FirstName, registrantDb.LastName);
 
             }
             catch (Exception e)
@@ -50,7 +44,7 @@ namespace pwsoFunctions
             }
 
 
-            return new OkResult();
+            return new OkObjectResult(athlete);
         }
     }
 }

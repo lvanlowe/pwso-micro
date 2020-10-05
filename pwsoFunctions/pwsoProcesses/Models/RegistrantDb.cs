@@ -20,6 +20,8 @@ namespace pwsoProcesses.Models
         public bool IsVolunteer { get; set; }
         public bool IsWaitListed { get; set; }
         public string Sender { get; set; }
+        public int AthleteId { get; set; }
+        public DateTime? MedicalExpirationDate { get; set; }
     }
 
 }

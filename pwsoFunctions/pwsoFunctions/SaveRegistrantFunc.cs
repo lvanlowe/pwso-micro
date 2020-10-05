@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Threading.Tasks;
+using InformationService.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using pwsoProcesses;
 using pwsoProcesses.Models;
+using RegistrantPhone = pwsoProcesses.RegistrantPhone;
 
 
 namespace pwsoFunctions
@@ -13,11 +16,11 @@ namespace pwsoFunctions
     public static class SaveRegistrantFunc
     {
         [FunctionName("SaveRegistrantFunc")]
-        public static void Run([QueueTrigger("registrant", Connection = "AzureWebJobsStorage")]string myQueueItem,
+        public static async Task Run([QueueTrigger("registrant", Connection = "AzureWebJobsStorage")]string myQueueItem,
                         [CosmosDB(
                 databaseName: "pwso",
                 collectionName: "registrant",
-                ConnectionStringSetting = "CosmosDBConnection")]out dynamic document,
+                ConnectionStringSetting = "CosmosDBConnection")]IAsyncCollector<RegistrantDb> registrantDocuments,
             ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
@@ -29,11 +32,12 @@ namespace pwsoFunctions
             var emailUrl = System.Environment.GetEnvironmentVariable("EmailUrl");
             var phoneUrl = System.Environment.GetEnvironmentVariable("PhoneUrl");
             var trainingUrl = System.Environment.GetEnvironmentVariable("TrainingUrl");
-            RegistrantDb registrantDb = new RegistrantDb();
+            var athleteUrl = System.Environment.GetEnvironmentVariable("AthleteUrl");
             try
             {
+
                 var registrantMessage = JsonSerializer.Deserialize<RegistrantMessage>(myQueueItem, options);
-                registrantDb = JsonSerializer.Deserialize<RegistrantDb>(myQueueItem, options);
+                var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(myQueueItem, options);
                 registrantDb.Emails = new List<string>();
                 registrantDb.Phones = new List<RegistrantPhone>();
                 registrantDb.Sport = registrantMessage.SportName;
@@ -43,7 +47,21 @@ namespace pwsoFunctions
                 AddPhone(registrantMessage.Phone1, registrantMessage.Phone1Type, registrantMessage.CanText1, registrantDb);
                 AddPhone(registrantMessage.Phone2, registrantMessage.Phone2Type, registrantMessage.CanText2, registrantDb);
                 AddPhone(registrantMessage.Phone3, registrantMessage.Phone3Type, registrantMessage.CanText3, registrantDb);
+                if (!registrantDb.IsVolunteer)
+                {
+                    var athleteJob = await process.GetRegistrationAthlete(registrantDb, athleteUrl);
+                    if (athleteJob.IsSuccessStatusCode)
+                    {
+                        var result = athleteJob.Content.ReadAsStringAsync();
+                        var athlete = JsonSerializer.Deserialize<Athletes>(result.Result, options);
+                        registrantDb.AthleteId = athlete.Id;
+                        registrantDb.MedicalExpirationDate = athlete.MedicalExpirationDate;
+                    }
+                }                
                 process.SendRegistrationNotification(registrantDb, trainingUrl);
+                await registrantDocuments.AddAsync(registrantDb);
+                process.SendRegistrationNotification(registrantDb, emailUrl);
+                process.SendRegistrationNotification(registrantDb, phoneUrl);
 
             }
             catch (Exception e)
@@ -52,9 +70,7 @@ namespace pwsoFunctions
                 //throw;
             }
 
-            document = registrantDb;
-            process.SendRegistrationNotification(registrantDb, emailUrl);
-            process.SendRegistrationNotification(registrantDb, phoneUrl);
+            //document = registrantDb;
         }
 
         private static void AddPhone(string phone, string phoneType, bool canText, RegistrantDb registrantDb)
