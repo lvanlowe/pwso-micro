@@ -41,6 +41,7 @@ namespace pwsoProcesses.Workers
             BuildEmailCopy();
             BuildEmailSubject();
             BuildEmailBody();
+            BuildAthleteMedicalEmailBody();
             return _message;
         }
 
@@ -121,6 +122,31 @@ namespace pwsoProcesses.Workers
 
         public void BuildAthleteMedicalEmailBody()
         {
+            _message.HtmlContent += "<br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            _message.HtmlContent += FormatName();
+            _message.HtmlContent += " release form ";
+            if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
+            {
+                _message.HtmlContent += "could not be verified automatically and therefore needs to be checked manually we will connect you to let you if there is anything you need to do before this athlete can participate.";
+            }
+            else
+            {
+                var medicalExpirationDate = _registrant.MedicalExpirationDate.Value;
+                if (medicalExpirationDate > DateTime.Now)
+                {
+                    _message.HtmlContent += "has been verified and is up to date, therefore can participate.";
+                    if (medicalExpirationDate >= DateTime.Now.AddMonths(3)) return;
+                    _message.HtmlContent += " However, this athletes form will be expiring on ";
+                    _message.HtmlContent += medicalExpirationDate.ToShortDateString();
+                    _message.HtmlContent += ", please update before it expires.";
+                }
+                else
+                {
+                    _message.HtmlContent += "had expired on ";
+                    _message.HtmlContent += medicalExpirationDate.ToShortDateString();
+                    _message.HtmlContent += ". The athletes release needs to be updated before they can participate.";
+                }
+            }
 
         }
 

@@ -167,7 +167,9 @@ namespace pwsoTest.WorkerTest
             _worker = new RegistrantMessageWorker(_message, registrant);
             _message.HtmlContent = "test";
             _worker.BuildAthleteMedicalEmailBody();
-            Assert.Equal("test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form had expired on 12/12/1990. The athletes release needs to be updated before they can participate.", _message.HtmlContent);
+            string expected =
+                "test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form had expired on " + DateTime.Now.AddYears(-1).ToShortDateString() + ". The athletes release needs to be updated before they can participate.";
+            Assert.Equal(expected, _message.HtmlContent);
         }
 
         [Fact]
@@ -177,8 +179,11 @@ namespace pwsoTest.WorkerTest
             registrant.MedicalExpirationDate = DateTime.Now.AddMonths(1);
             _worker = new RegistrantMessageWorker(_message, registrant);
             _message.HtmlContent = "test";
+            string expected =
+                "test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form has been verified and is up to date, therefore can participate. However, this athletes form will be expiring on " + DateTime.Now.AddMonths(1).ToShortDateString() + ", please update before it expires.";
+
             _worker.BuildAthleteMedicalEmailBody();
-            Assert.Equal("test<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form has been verified and is up to date, therefore can participate. However, this athletes form will be expiring on 12/12/2020, please update before it expires.", _message.HtmlContent);
+            Assert.Equal(expected, _message.HtmlContent);
         }
 
 
