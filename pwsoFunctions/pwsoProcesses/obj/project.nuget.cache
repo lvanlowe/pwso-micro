@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "gLT4odl/Nep80k9lvid14YMuV1cD8LsWtHjCtzzFSJ9fWIRUTMw7mdxpj8va4XVNBV6oKlaeyf0SJpFoRYczeA==",
+  "dgSpecHash": "/KDa456rCuRRcB8GCWj7RHGB4k5O13XMALhrMQ8rD6fIDsR4wMrM4eoaQs2usd55Yg0BIWtYKMm9uuOoIudiXw==",
   "success": true,
   "projectFilePath": "C:\\Users\\lvanl\\source\\repos\\Hub\\pwso-micro\\pwsoFunctions\\pwsoProcesses\\pwsoProcesses.csproj",
   "expectedPackageFiles": [
@@ -107,7 +107,7 @@
     "C:\\Users\\lvanl\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
-    "C:\\Users\\lvanl\\.nuget\\packages\\twilio\\5.47.2\\twilio.5.47.2.nupkg.sha512"
+    "C:\\Users\\lvanl\\.nuget\\packages\\twilio\\5.47.1\\twilio.5.47.1.nupkg.sha512"
   ],
   "logs": []
 }

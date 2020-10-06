@@ -42,6 +42,7 @@ namespace pwsoProcesses.Workers
             BuildEmailSubject();
             BuildEmailBody();
             BuildAthleteMedicalEmailBody();
+            BuildSignature();
             return _message;
         }
 
@@ -52,6 +53,7 @@ namespace pwsoProcesses.Workers
             BuildEmailCopy();
             BuildMedicalSubject();
             BuildMedicalEmailBody();
+            BuildSignature();
             return _message;
         }
 
@@ -115,7 +117,7 @@ namespace pwsoProcesses.Workers
 
         public void BuildEmailBody()
         {
-            const string body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            const string body = "<br>Hi Registrant<br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
             var message = BuildMessage(body);
             _message.HtmlContent = message;
         }
@@ -150,10 +152,19 @@ namespace pwsoProcesses.Workers
 
         }
 
+        public void BuildSignature()
+        {
+            _message.HtmlContent += "<br><br><br>PWSO Registration Application";
+            _message.HtmlContent += "<br>Prince William Special Olympics";
+            _message.HtmlContent += "<br>PO Box 1073";
+            _message.HtmlContent += "<br>Woodbridge, VA 22195-1073";
+            _message.HtmlContent += "<br>www.pwsova.org";
+        }
+
 
         public void BuildMedicalEmailBody()
         {
-            const string body = "<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
+            const string body = "<br>Hi Medical Coordinator<br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
             var message = BuildMedicalMessage(body);
             _message.HtmlContent = message;
         }

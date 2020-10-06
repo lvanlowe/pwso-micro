@@ -2374,7 +2374,7 @@
           "lib/netstandard1.3/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Twilio/5.47.2": {
+      "Twilio/5.47.1": {
         "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "5.3.0",
@@ -2488,7 +2488,7 @@
           "InformationService": "1.0.0",
           "Microsoft.AspNetCore.Mvc.Abstractions": "2.1.0",
           "Sendgrid": "9.21.0",
-          "Twilio": "5.47.2"
+          "Twilio": "5.47.1"
         },
         "compile": {
           "bin/placeholder/pwsoProcesses.dll": {}
@@ -7907,10 +7907,10 @@
         "system.xml.xmlserializer.nuspec"
       ]
     },
-    "Twilio/5.47.2": {
-      "sha512": "ZxD6uTQn4nxN/6yo5z5GeXxph1Xf/NXktiFjPi1+4ho9bzpcziB19yKrzILxlMsWNa2HMwKYq2+oveezuotLCw==",
+    "Twilio/5.47.1": {
+      "sha512": "esKaCIwvnAE42UIdSJCw7C4CxIq2QN4iv32FK6Ct0f0UmKLfpds7lIxN2XPPkMJXkLP3cY60BZcaTkglxPMMSw==",
       "type": "package",
-      "path": "twilio/5.47.2",
+      "path": "twilio/5.47.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -7922,7 +7922,7 @@
         "lib/netstandard1.4/Twilio.xml",
         "lib/netstandard2.0/Twilio.dll",
         "lib/netstandard2.0/Twilio.xml",
-        "twilio.5.47.2.nupkg.sha512",
+        "twilio.5.47.1.nupkg.sha512",
         "twilio.nuspec"
       ]
     },

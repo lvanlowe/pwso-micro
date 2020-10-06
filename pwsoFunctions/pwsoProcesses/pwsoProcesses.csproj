@@ -7,7 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.1.0" />
     <PackageReference Include="Sendgrid" Version="9.21.0" />
-    <PackageReference Include="Twilio" Version="5.47.2" />
+    <PackageReference Include="Twilio" Version="5.47.1" />
   </ItemGroup>
 
   <ItemGroup>

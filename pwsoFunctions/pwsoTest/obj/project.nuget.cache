@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "f1OcAL8w5aGR9SG3E312AjWCutmKmbTewruu36nu4xGITxZ6BWTJw12DMjH20G1s7VESlY6+dbsKjpZcdQoJmA==",
+  "dgSpecHash": "1EbIN/ZZRpK3EciQ8bNLbNBI4quyEiYSKclAuI4saNViWuJQvBv4/NA8GoJtu4pDHNkTGUxh+IZxg+8a6mu2tA==",
   "success": true,
   "projectFilePath": "C:\\Users\\lvanl\\source\\repos\\Hub\\pwso-micro\\pwsoFunctions\\pwsoTest\\pwsoTest.csproj",
   "expectedPackageFiles": [
@@ -147,7 +147,7 @@
     "C:\\Users\\lvanl\\.nuget\\packages\\system.xml.xdocument\\4.3.0\\system.xml.xdocument.4.3.0.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\system.xml.xmldocument\\4.3.0\\system.xml.xmldocument.4.3.0.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\system.xml.xmlserializer\\4.3.0\\system.xml.xmlserializer.4.3.0.nupkg.sha512",
-    "C:\\Users\\lvanl\\.nuget\\packages\\twilio\\5.47.2\\twilio.5.47.2.nupkg.sha512",
+    "C:\\Users\\lvanl\\.nuget\\packages\\twilio\\5.47.1\\twilio.5.47.1.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\xunit\\2.4.1\\xunit.2.4.1.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\xunit.abstractions\\2.0.3\\xunit.abstractions.2.0.3.nupkg.sha512",
     "C:\\Users\\lvanl\\.nuget\\packages\\xunit.analyzers\\0.10.0\\xunit.analyzers.0.10.0.nupkg.sha512",

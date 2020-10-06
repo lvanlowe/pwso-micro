@@ -53,15 +53,18 @@ namespace pwsoFunctions
                     if (athleteJob.IsSuccessStatusCode)
                     {
                         var result = athleteJob.Content.ReadAsStringAsync();
-                        var athlete = JsonSerializer.Deserialize<Athletes>(result.Result, options);
-                        registrantDb.AthleteId = athlete.Id;
-                        registrantDb.MedicalExpirationDate = athlete.MedicalExpirationDate;
+                        if (result.Result.Length > 0)
+                        {
+                            var athlete = JsonSerializer.Deserialize<Athletes>(result.Result, options);
+                            registrantDb.AthleteId = athlete.Id;
+                            registrantDb.MedicalExpirationDate = athlete.MedicalExpirationDate;
+                        }
                     }
                 }                
                 process.SendRegistrationNotification(registrantDb, trainingUrl);
                 await registrantDocuments.AddAsync(registrantDb);
                 process.SendRegistrationNotification(registrantDb, emailUrl);
-                process.SendRegistrationNotification(registrantDb, phoneUrl);
+                //process.SendRegistrationNotification(registrantDb, phoneUrl);
 
             }
             catch (Exception e)
