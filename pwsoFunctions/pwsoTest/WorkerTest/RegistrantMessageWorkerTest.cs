@@ -5,7 +5,7 @@ using pwsoProcesses;
 using pwsoProcesses.Models;
 using pwsoProcesses.Workers;
 using SendGrid.Helpers.Mail;
-using Twilio.Rest.Api.V2010.Account;
+//using Twilio.Rest.Api.V2010.Account;
 using Xunit;
 
 namespace pwsoTest.WorkerTest
@@ -276,105 +276,105 @@ namespace pwsoTest.WorkerTest
             Assert.Equal("+12125551212", actual[0]);
         }
 
-        [Fact]
-        public void BuildPhoneMessageListTest_0_phone_0_list()
-        {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
-            registrant.Phones = new List<RegistrantPhone>();
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "7035551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
-            _worker = new RegistrantMessageWorker(registrant, "20255512121");
-            List<string> phonelist = new List<string>();
-            List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
-            Assert.Equal(0, actual.Count);
+        //[Fact]
+        //public void BuildPhoneMessageListTest_0_phone_0_list()
+        //{
+        //    var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
+        //    registrant.Phones = new List<RegistrantPhone>();
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "7035551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+        //    _worker = new RegistrantMessageWorker(registrant, "20255512121");
+        //    List<string> phonelist = new List<string>();
+        //    List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
+        //    Assert.Equal(0, actual.Count);
 
-        }
+        //}
 
-        [Fact]
-        public void BuildPhoneMessageListTest_1_phone_1_list()
-        {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
-            registrant.Phones = new List<RegistrantPhone>();
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
-            _worker = new RegistrantMessageWorker(registrant, "20255512121");
-            List<string> phonelist = new List<string>();
-            phonelist.Add("+17035551212");
-            List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
-            Assert.Equal(1, actual.Count);
+        //[Fact]
+        //public void BuildPhoneMessageListTest_1_phone_1_list()
+        //{
+        //    var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
+        //    registrant.Phones = new List<RegistrantPhone>();
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+        //    _worker = new RegistrantMessageWorker(registrant, "20255512121");
+        //    List<string> phonelist = new List<string>();
+        //    phonelist.Add("+17035551212");
+        //    List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
+        //    Assert.Equal(1, actual.Count);
 
-        }
+        //}
 
-        [Fact]
-        public void BuildPhoneMessageListTest_2_phone_2_to_number()
-        {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
-            registrant.Phones = new List<RegistrantPhone>();
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "7035551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "2125551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "3015551212" });
-            _worker = new RegistrantMessageWorker(registrant, "20255512121");
-            List<string> phonelist = new List<string>();
-            phonelist.Add("+12125551212");
-            phonelist.Add("+13015551212");
-            List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
-            Assert.Equal(phonelist[0], actual[0].To.ToString());
-            Assert.Equal(phonelist[1], actual[1].To.ToString());
+        //[Fact]
+        //public void BuildPhoneMessageListTest_2_phone_2_to_number()
+        //{
+        //    var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
+        //    registrant.Phones = new List<RegistrantPhone>();
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "7035551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "2125551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "3015551212" });
+        //    _worker = new RegistrantMessageWorker(registrant, "20255512121");
+        //    List<string> phonelist = new List<string>();
+        //    phonelist.Add("+12125551212");
+        //    phonelist.Add("+13015551212");
+        //    List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
+        //    Assert.Equal(phonelist[0], actual[0].To.ToString());
+        //    Assert.Equal(phonelist[1], actual[1].To.ToString());
 
-        }
+        //}
 
-        [Fact]
-        public void BuildPhoneMessageListTest_3_phone_3_to_number()
-        {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
-            registrant.Phones = new List<RegistrantPhone>();
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "2125551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "3015551212" });
-            _worker = new RegistrantMessageWorker(registrant, "20255512121");
-            List<string> phonelist = new List<string>();
-            phonelist.Add("+17035551212"); 
-            phonelist.Add("+12125551212");
-            phonelist.Add("+13015551212");
-            List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
-            Assert.Equal(phonelist[0], actual[0].To.ToString());
-            Assert.Equal(phonelist[1], actual[1].To.ToString());
-            Assert.Equal(phonelist[2], actual[2].To.ToString());
+        //[Fact]
+        //public void BuildPhoneMessageListTest_3_phone_3_to_number()
+        //{
+        //    var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
+        //    registrant.Phones = new List<RegistrantPhone>();
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "2125551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "3015551212" });
+        //    _worker = new RegistrantMessageWorker(registrant, "20255512121");
+        //    List<string> phonelist = new List<string>();
+        //    phonelist.Add("+17035551212"); 
+        //    phonelist.Add("+12125551212");
+        //    phonelist.Add("+13015551212");
+        //    List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
+        //    Assert.Equal(phonelist[0], actual[0].To.ToString());
+        //    Assert.Equal(phonelist[1], actual[1].To.ToString());
+        //    Assert.Equal(phonelist[2], actual[2].To.ToString());
 
-        }
-        [Fact]
-        public void BuildPhoneMessageListTest_1_phone_1_to_number()
-        {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
-            registrant.Phones = new List<RegistrantPhone>();
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
-            _worker = new RegistrantMessageWorker(registrant, "20255512121");
-            List<string> phonelist = new List<string>();
-            phonelist.Add("+17035551212");
-            List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
-            Assert.Equal(phonelist[0], actual[0].To.ToString());
+        //}
+        //[Fact]
+        //public void BuildPhoneMessageListTest_1_phone_1_to_number()
+        //{
+        //    var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
+        //    registrant.Phones = new List<RegistrantPhone>();
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+        //    _worker = new RegistrantMessageWorker(registrant, "20255512121");
+        //    List<string> phonelist = new List<string>();
+        //    phonelist.Add("+17035551212");
+        //    List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
+        //    Assert.Equal(phonelist[0], actual[0].To.ToString());
 
-        }
+        //}
 
-        [Fact]
-        public void BuildPhoneMessageListTest_1_phone_1_body()
-        {
-            var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
-            registrant.Phones = new List<RegistrantPhone>();
-            registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
-            registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
-            _worker = new RegistrantMessageWorker(registrant, "20255512121");
-            List<string> phonelist = new List<string>();
-            phonelist.Add("+17035551212");
-            List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
-            Assert.Equal("Dick Grayson has been successfully registered as an athlete for Track.", actual[0].Body);
+        //[Fact]
+        //public void BuildPhoneMessageListTest_1_phone_1_body()
+        //{
+        //    var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false };
+        //    registrant.Phones = new List<RegistrantPhone>();
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = true, Phone = "7035551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "2125551212" });
+        //    registrant.Phones.Add(new RegistrantPhone { CanText = false, Phone = "3015551212" });
+        //    _worker = new RegistrantMessageWorker(registrant, "20255512121");
+        //    List<string> phonelist = new List<string>();
+        //    phonelist.Add("+17035551212");
+        //    List<CreateMessageOptions> actual = _worker.BuildPhoneMessageList(phonelist);
+        //    Assert.Equal("Dick Grayson has been successfully registered as an athlete for Track.", actual[0].Body);
 
-        }
+        //}
 
         [Fact]
         public void BuildRegistantModelTest_1_Email_1_Phone_check_regrant_fields()

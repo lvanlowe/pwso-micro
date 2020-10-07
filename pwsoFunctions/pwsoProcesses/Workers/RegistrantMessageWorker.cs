@@ -5,8 +5,8 @@ using System.Text;
 using InformationService.Models;
 using pwsoProcesses.Models;
 using SendGrid.Helpers.Mail;
-using Twilio.Rest.Api.V2010.Account;
-using Twilio.Types;
+//using Twilio.Rest.Api.V2010.Account;
+//using Twilio.Types;
 
 namespace pwsoProcesses.Workers
 {
@@ -14,7 +14,7 @@ namespace pwsoProcesses.Workers
     {
         private readonly SendGridMessage _message;
         private readonly RegistrantDb _registrant;
-        private List<CreateMessageOptions> _textMessageList;
+        //private List<CreateMessageOptions> _textMessageList;
         private readonly string _fromNumber;
         public string MedicalEmail { get; set; }
         public RegistrantMessageWorker(SendGridMessage message, RegistrantDb registrant)
@@ -170,7 +170,7 @@ namespace pwsoProcesses.Workers
         }
 
 
-        private string BuildMessage(string body)
+        public string BuildMessage(string body)
         {
             var name = FormatName();
             body += name;
@@ -237,30 +237,30 @@ namespace pwsoProcesses.Workers
             return name;
         }
 
-        public List<CreateMessageOptions> PrepareRegistrationText()
-        {
-            var phoneList = BuildPhoneList();
-            return BuildPhoneMessageList(phoneList);
-        }
+        //public List<CreateMessageOptions> PrepareRegistrationText()
+        //{
+        //    var phoneList = BuildPhoneList();
+        //    return BuildPhoneMessageList(phoneList);
+        //}
 
         public List<string> BuildPhoneList()
         {
             return (from phone in _registrant.Phones where phone.CanText select "+1" + phone.Phone).ToList();
         }
 
-        public List<CreateMessageOptions> BuildPhoneMessageList(List<string> phoneList)
-        {
-            _textMessageList = new List<CreateMessageOptions>();
-            foreach (var message in phoneList.Select(phone => new CreateMessageOptions(new PhoneNumber(phone))
-            {
-                From = new PhoneNumber(_fromNumber),
-                Body = BuildMessage(string.Empty),
-            }))
-            {
-                _textMessageList.Add(message);
-            }
-            return _textMessageList;
-        }
+        //public List<CreateMessageOptions> BuildPhoneMessageList(List<string> phoneList)
+        //{
+        //    _textMessageList = new List<CreateMessageOptions>();
+        //    foreach (var message in phoneList.Select(phone => new CreateMessageOptions(new PhoneNumber(phone))
+        //    {
+        //        From = new PhoneNumber(_fromNumber),
+        //        Body = BuildMessage(string.Empty),
+        //    }))
+        //    {
+        //        _textMessageList.Add(message);
+        //    }
+        //    return _textMessageList;
+        //}
 
         public Registrant BuildRegistrant()
         {
