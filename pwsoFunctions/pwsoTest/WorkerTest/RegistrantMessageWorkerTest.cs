@@ -108,7 +108,7 @@ namespace pwsoTest.WorkerTest
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", Sport = "Track", IsVolunteer = false};
             _worker = new RegistrantMessageWorker(_message, registrant);
             _worker.BuildEmailBody();
-            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick Grayson has been successfully registered as an athlete for Track.", _message.HtmlContent);
+            Assert.Equal("<br>Hi Registrant<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick Grayson has been successfully registered as an athlete for Track.", _message.HtmlContent);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace pwsoTest.WorkerTest
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true};
             _worker = new RegistrantMessageWorker(_message, registrant);
             _worker.BuildEmailBody();
-            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been successfully registered as an volunteer for Track at Gainesville.", _message.HtmlContent);
+            Assert.Equal("<br>Hi Registrant<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been successfully registered as an volunteer for Track at Gainesville.", _message.HtmlContent);
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace pwsoTest.WorkerTest
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = false, IsWaitListed = true};
             _worker = new RegistrantMessageWorker(_message, registrant);
             _worker.BuildEmailBody();
-            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been placed on the waitlist for Track at Gainesville and will be notified when the status changes.", _message.HtmlContent);
+            Assert.Equal("<br>Hi Registrant<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson has been placed on the waitlist for Track at Gainesville and will be notified when the status changes.", _message.HtmlContent);
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace pwsoTest.WorkerTest
             var registrant = new RegistrantDb { FirstName = "Dick", LastName = "Grayson", NickName = "Robin", Sport = "Track", ProgramName = "Gainesville", IsVolunteer = true };
             _worker = new RegistrantMessageWorker(_message, registrant);
             _worker.BuildMedicalEmailBody();
-            Assert.Equal("<br>Hi <br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form could not be verified automatically when registering for Track at Gainesville.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Please verify manually.", _message.HtmlContent);
+            Assert.Equal("<br>Hi Medical Coordinator<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Dick (Robin) Grayson release form could not be verified automatically when registering for Track at Gainesville.<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Please verify manually.", _message.HtmlContent);
         }
 
         [Fact]
