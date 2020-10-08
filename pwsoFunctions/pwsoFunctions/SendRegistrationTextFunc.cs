@@ -32,27 +32,20 @@ namespace pwsoFunctions
             {
                 var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
-                var worker = new RegistrantMessageWorker(registrantDb,
-                    System.Environment.GetEnvironmentVariable("FromPhone"));
-                foreach (var phone in registrantDb.Phones)
-                {
-                    if (phone.CanText)
-                    {
-                        var textMessage = new CreateMessageOptions(new PhoneNumber("+1" + phone.Phone))
-                        {
-                            Body = worker.BuildMessage(string.Empty),
-                            From = new PhoneNumber(System.Environment.GetEnvironmentVariable("FromPhone"))
-                        };
-                        await messages.AddAsync(textMessage);
-                    }
-                }
+                var worker = new RegistrantMessageWorker(registrantDb, System.Environment.GetEnvironmentVariable("FromPhone"));
 
+                var textMessageList = worker.PrepareRegistrationText();
+                foreach (var textMessage in textMessageList)
+                {
+                    await messages.AddAsync(textMessage);
+                }
             }
             catch (Exception e)
             {
                 log.LogInformation(e.ToString());
                 return new BadRequestResult();
             }
+
 
 
             return new OkResult();

@@ -1136,7 +1136,7 @@
           "System.Threading": "4.3.0"
         },
         "compile": {
-          "ref/netstandard1.3/_._": {}
+          "ref/netstandard1.3/System.Collections.Specialized.dll": {}
         },
         "runtime": {
           "lib/netstandard1.3/System.Collections.Specialized.dll": {}
@@ -2427,6 +2427,23 @@
           "lib/netstandard1.3/System.Xml.XmlSerializer.dll": {}
         }
       },
+      "Twilio/5.6.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "1.1.2",
+          "Microsoft.IdentityModel.Tokens": "5.1.2",
+          "NETStandard.Library": "1.6.1",
+          "Newtonsoft.Json": "9.0.1",
+          "System.Collections.Specialized": "4.3.0",
+          "System.IdentityModel.Tokens.Jwt": "5.1.2"
+        },
+        "compile": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.4/Twilio.dll": {}
+        }
+      },
       "xunit/2.4.1": {
         "type": "package",
         "dependencies": {
@@ -2525,7 +2542,8 @@
         "dependencies": {
           "InformationService": "1.0.0",
           "Microsoft.AspNetCore.Mvc.Abstractions": "2.2.0",
-          "Sendgrid": "9.21.0"
+          "Sendgrid": "9.21.0",
+          "Twilio": "5.6.3"
         },
         "compile": {
           "bin/placeholder/pwsoProcesses.dll": {}
@@ -8009,6 +8027,23 @@
         "runtimes/aot/lib/netcore50/System.Xml.XmlSerializer.dll",
         "system.xml.xmlserializer.4.3.0.nupkg.sha512",
         "system.xml.xmlserializer.nuspec"
+      ]
+    },
+    "Twilio/5.6.3": {
+      "sha512": "k2ujhgLrH74Gq7WeLKX3YZ/KTfmoGxZmQWriHf2SvwHGfMMEqB4szi28MiJbO+ArtnpLVJFbTcKW6UvyvBubwQ==",
+      "type": "package",
+      "path": "twilio/5.6.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net35/Twilio.dll",
+        "lib/net35/Twilio.xml",
+        "lib/net451/Twilio.dll",
+        "lib/net451/Twilio.xml",
+        "lib/netstandard1.4/Twilio.dll",
+        "lib/netstandard1.4/Twilio.xml",
+        "twilio.5.6.3.nupkg.sha512",
+        "twilio.nuspec"
       ]
     },
     "xunit/2.4.1": {

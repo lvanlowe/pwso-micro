@@ -64,7 +64,7 @@ namespace pwsoFunctions
                 process.SendRegistrationNotification(registrantDb, trainingUrl);
                 await registrantDocuments.AddAsync(registrantDb);
                 process.SendRegistrationNotification(registrantDb, emailUrl);
-                //process.SendRegistrationNotification(registrantDb, phoneUrl);
+                process.SendRegistrationNotification(registrantDb, phoneUrl);
 
             }
             catch (Exception e)
