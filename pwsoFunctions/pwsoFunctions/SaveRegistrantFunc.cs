@@ -41,6 +41,7 @@ namespace pwsoFunctions
                 registrantDb.Emails = new List<string>();
                 registrantDb.Phones = new List<RegistrantPhone>();
                 registrantDb.Sport = registrantMessage.SportName;
+                registrantDb.DateCreated = DateTime.Now;
                 AddEmail(registrantMessage.Email1, registrantDb);
                 AddEmail(registrantMessage.Email2, registrantDb);
                 AddEmail(registrantMessage.Email3, registrantDb);

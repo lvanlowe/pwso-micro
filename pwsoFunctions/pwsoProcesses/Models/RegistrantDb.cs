@@ -22,6 +22,7 @@ namespace pwsoProcesses.Models
         public string Sender { get; set; }
         public int AthleteId { get; set; }
         public DateTime? MedicalExpirationDate { get; set; }
+        public DateTime DateCreated { get; set; }
     }
 
 }
