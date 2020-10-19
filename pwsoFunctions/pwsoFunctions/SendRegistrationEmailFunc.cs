@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -31,6 +33,12 @@ namespace pwsoFunctions
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
                 var message = new SendGridMessage();
                 var worker = new RegistrantMessageWorker(message, registrantDb);
+                var connectionString = System.Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("forms");
+                BlobClient blobClient = containerClient.GetBlobClient("Athlete_Registration,_Release_and_Medical_Form4.pdf");
+                BlobDownloadInfo download = await blobClient.DownloadAsync();
+                Stream myBlob = download.Content;
                 await messageCollector.AddAsync(worker.PrepareRegistrationEmail());
                 if (!registrantDb.IsVolunteer && registrantDb.AthleteId == 0)
                 {
