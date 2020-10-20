@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using Azure.Storage.Blobs.Models;
 using InformationService.Models;
 using pwsoProcesses.Models;
 using SendGrid.Helpers.Mail;
@@ -34,7 +36,7 @@ namespace pwsoProcesses.Workers
             _registrant = registrant;
         }
 
-        public SendGridMessage PrepareRegistrationEmail()
+        public SendGridMessage PrepareRegistrationEmail(BlobDownloadInfo medicalDownload, BlobDownloadInfo downloadInstructions)
         {
             BuildEmailFrom();
             BuildEmailTo();
@@ -43,6 +45,7 @@ namespace pwsoProcesses.Workers
             BuildEmailBody();
             BuildAthleteMedicalEmailBody();
             BuildSignature();
+            AddAttachments(medicalDownload, downloadInstructions);
             return _message;
         }
 
@@ -159,6 +162,17 @@ namespace pwsoProcesses.Workers
             _message.HtmlContent += "<br>PO Box 1073";
             _message.HtmlContent += "<br>Woodbridge, VA 22195-1073";
             _message.HtmlContent += "<br>www.pwsova.org";
+        }
+
+        public void AddAttachments(BlobDownloadInfo medicalDownload, BlobDownloadInfo downloadInstructions)
+        {
+            BinaryReader medicalReader = new BinaryReader(medicalDownload.Content);
+            Byte[] medicalBytes = medicalReader.ReadBytes(Convert.ToInt32(medicalDownload.ContentLength));
+            _message.AddAttachment("Athlete_Registration,_Release_and_Medical_Form4.pdf", Convert.ToBase64String(medicalBytes, 0, medicalBytes.Length));
+            BinaryReader instructionReader = new BinaryReader(downloadInstructions.Content);
+            Byte[] instructionBytes = instructionReader.ReadBytes(Convert.ToInt32(downloadInstructions.ContentLength));
+            _message.AddAttachment("Instructions for Area 23 Medical Forms.docx", Convert.ToBase64String(instructionBytes, 0, instructionBytes.Length));
+
         }
 
 
