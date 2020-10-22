@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Azure.Storage.Blobs.Models;
 using InformationService.Models;
+using Microsoft.EntityFrameworkCore.Design;
 using pwsoProcesses.Models;
 using SendGrid.Helpers.Mail;
 using Twilio.Rest.Api.V2010.Account;
@@ -16,13 +17,37 @@ namespace pwsoProcesses.Workers
     {
         private readonly SendGridMessage _message;
         private readonly RegistrantDb _registrant;
+        private readonly RegistrantSendGrid _registrantSendGrid;
+
         private List<CreateMessageOptions> _textMessageList;
         private readonly string _fromNumber;
+        private string volunteerTemplate = "d-f889b9fc09c54ad58bf83a0cb36720bf";
+        private string medicalTemplate = "d-8226e92536ce4514a2223781c3a45af0";
+        private string athleteTemplate = "d-23ad534900d547a6b5b04362ea96d16b";
+        private string waitlistTemplate = "d-b7b1ec6c2ec54e31b49dab23584b1faa";
+        private string noMedicalTemplate = "d-97360ccc62864937a3e0e79a60b54dda";
+        private string expiredTemplate = "d-ddf54cab8a514b02a72d54f4b1faa41a";
+        private string expiringTemplate = "d-1dabedfc6e5445c7b914916822c7b1ab";
+        private string waitlistNoMedicalTemplate = "d-16dcb63a082b4ccb8242b55f20f89ba9";
+        private string waitlistExpiredTemplate = "d-a094a54cf8fb427eaeae56f20fccc419";
+        private string waitlistExpiringTemplate = "d-3450ce63e0b4401cbb35529bd799c248";
         public string MedicalEmail { get; set; }
         public RegistrantMessageWorker(SendGridMessage message, RegistrantDb registrant)
         {
             _message = message;
             _registrant = registrant;
+            _registrantSendGrid = new RegistrantSendGrid {Name = FormatName(), Sport = registrant.Sport};
+
+            if (!string.IsNullOrEmpty(registrant.ProgramName))
+            {
+                _registrantSendGrid.Sport += " at " + registrant.ProgramName;
+            }
+
+            if (registrant.AthleteId > 0 && registrant.MedicalExpirationDate.HasValue)
+            {
+                _registrantSendGrid.MedicalExpirationDate = registrant.MedicalExpirationDate.Value.ToLongDateString();
+            }
+
         }
 
         public RegistrantMessageWorker(RegistrantDb registrant, string fromNumber)
@@ -41,11 +66,31 @@ namespace pwsoProcesses.Workers
             BuildEmailFrom();
             BuildEmailTo();
             BuildEmailCopy();
-            BuildEmailSubject();
-            BuildEmailBody();
-            BuildAthleteMedicalEmailBody();
-            BuildSignature();
-            AddAttachments(medicalDownload, downloadInstructions);
+            //RegistrantSendGrid sendGrid = new RegistrantSendGrid
+            //{
+            //    MedicalExpirationDate = DateTime.Now.ToLongDateString(),
+            //    Sport = "Soccer at Woodbridge",
+            //    Name = "Erik Van Lowe"
+            //};
+            //_message.SetTemplateId("d-23ad534900d547a6b5b04362ea96d16b");
+            _message.SetTemplateId(BuildTemplate());
+            _message.SetTemplateData(_registrantSendGrid);
+            //BuildEmailSubject();
+            //BuildEmailBody();
+            //BuildAthleteMedicalEmailBody();
+            //BuildSignature();
+            if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
+            {
+                AddAttachments(medicalDownload, downloadInstructions);
+            }
+            else
+            {
+                if (_registrant.MedicalExpirationDate.Value < DateTime.Now.AddMonths(3))
+                {
+                    AddAttachments(medicalDownload, downloadInstructions);
+                }
+            }
+
             return _message;
         }
 
@@ -54,9 +99,12 @@ namespace pwsoProcesses.Workers
             BuildEmailFrom();
             BuildEmailMedicalTo();
             BuildEmailCopy();
-            BuildMedicalSubject();
-            BuildMedicalEmailBody();
-            BuildSignature();
+            _message.SetTemplateId(medicalTemplate);
+            _message.SetTemplateData(_registrantSendGrid);
+
+            //BuildMedicalSubject();
+            //BuildMedicalEmailBody();
+            //BuildSignature();
             return _message;
         }
 
@@ -183,6 +231,69 @@ namespace pwsoProcesses.Workers
             _message.HtmlContent = message;
         }
 
+        public string BuildTemplate()
+        {
+            if (_registrant.IsVolunteer)
+            {
+                return volunteerTemplate;
+            }
+            else
+            {
+                if (_registrant.IsWaitListed)
+                {
+                    if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
+                    {
+                        return waitlistNoMedicalTemplate;
+                    }
+                    else
+                    {
+                        var medicalExpirationDate = _registrant.MedicalExpirationDate.Value;
+                        if (medicalExpirationDate > DateTime.Now)
+                        {
+                            if (medicalExpirationDate >= DateTime.Now.AddMonths(3))
+                            {
+                                return waitlistTemplate;
+                            }
+                            else
+                            {
+                                return waitlistExpiringTemplate;
+                            }
+                        }
+                        else
+                        {
+                            return waitlistExpiredTemplate;
+                        }
+                    }
+                }
+                else
+                {
+                    if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
+                    {
+                        return noMedicalTemplate;
+                    }
+                    else
+                    {
+                        var medicalExpirationDate = _registrant.MedicalExpirationDate.Value;
+                        if (medicalExpirationDate > DateTime.Now)
+                        {
+                            if (medicalExpirationDate >= DateTime.Now.AddMonths(3))
+                            {
+                                return athleteTemplate;
+                            }
+                            else
+                            {
+                                return expiringTemplate;
+                            }
+                        }
+                        else
+                        {
+                            return expiredTemplate;
+                        }
+                    }
+                }
+            }
+
+        }
 
         public string BuildMessage(string body)
         {
@@ -316,4 +427,12 @@ namespace pwsoProcesses.Workers
 
 
     }
+
+    public class RegistrantSendGrid
+    {
+        public string Name { get; set; }
+        public string Sport { get; set; }
+        public string MedicalExpirationDate { get; set; }
+    }
+
 }
