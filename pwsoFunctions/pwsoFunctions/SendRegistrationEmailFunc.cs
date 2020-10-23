@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -13,6 +15,7 @@ using pwsoProcesses.Models;
 using pwsoProcesses.Workers;
 using SendGrid.Helpers.Mail;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace pwsoFunctions
 {
@@ -31,7 +34,16 @@ namespace pwsoFunctions
                 var registrantDb = JsonSerializer.Deserialize<RegistrantDb>(requestBody);
                 var message = new SendGridMessage();
                 var worker = new RegistrantMessageWorker(message, registrantDb);
-                await messageCollector.AddAsync(worker.PrepareRegistrationEmail());
+                var connectionString = System.Environment.GetEnvironmentVariable("AzureWebJobsStorage");
+                BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
+                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("forms");
+                BlobClient blobMedical = containerClient.GetBlobClient("Athlete_Registration,_Release_and_Medical_Form4.pdf");
+                BlobDownloadInfo downloadMedical = await blobMedical.DownloadAsync();
+                BlobClient blobInstructions = containerClient.GetBlobClient("Instructions for Area 23 Medical Forms_0.docx");
+                BlobDownloadInfo downloadInstructions = await blobInstructions.DownloadAsync();
+                //Stream myBlob = downloadMedical.Content;
+                //var length = downloadMedical.ContentLength;
+                await messageCollector.AddAsync(worker.PrepareRegistrationEmail(downloadMedical, downloadInstructions));
                 if (!registrantDb.IsVolunteer && registrantDb.AthleteId == 0)
                 {
                     var medMessage = new SendGridMessage();
