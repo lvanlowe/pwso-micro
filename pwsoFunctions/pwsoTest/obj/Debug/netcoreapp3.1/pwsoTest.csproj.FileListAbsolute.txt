@@ -146,3 +146,6 @@ C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netc
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.Abstractions.dll
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Routing.Abstractions.dll
 C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Microsoft.Net.Http.Headers.dll
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Azure.Core.dll
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Azure.Storage.Blobs.dll
+C:\Users\lvanl\source\repos\Hub\pwso-micro\pwsoFunctions\pwsoTest\bin\Debug\netcoreapp3.1\Azure.Storage.Common.dll

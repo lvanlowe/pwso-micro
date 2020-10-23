@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Azure.Storage.Blobs.Models;
 using InformationService.Models;
-using Microsoft.EntityFrameworkCore.Design;
 using pwsoProcesses.Models;
 using SendGrid.Helpers.Mail;
 using Twilio.Rest.Api.V2010.Account;
@@ -21,16 +19,16 @@ namespace pwsoProcesses.Workers
 
         private List<CreateMessageOptions> _textMessageList;
         private readonly string _fromNumber;
-        private string volunteerTemplate = "d-f889b9fc09c54ad58bf83a0cb36720bf";
-        private string medicalTemplate = "d-8226e92536ce4514a2223781c3a45af0";
-        private string athleteTemplate = "d-23ad534900d547a6b5b04362ea96d16b";
-        private string waitlistTemplate = "d-b7b1ec6c2ec54e31b49dab23584b1faa";
-        private string noMedicalTemplate = "d-97360ccc62864937a3e0e79a60b54dda";
-        private string expiredTemplate = "d-ddf54cab8a514b02a72d54f4b1faa41a";
-        private string expiringTemplate = "d-1dabedfc6e5445c7b914916822c7b1ab";
-        private string waitlistNoMedicalTemplate = "d-16dcb63a082b4ccb8242b55f20f89ba9";
-        private string waitlistExpiredTemplate = "d-a094a54cf8fb427eaeae56f20fccc419";
-        private string waitlistExpiringTemplate = "d-3450ce63e0b4401cbb35529bd799c248";
+        private const string VolunteerTemplate = "d-f889b9fc09c54ad58bf83a0cb36720bf";
+        private const string MedicalTemplate = "d-8226e92536ce4514a2223781c3a45af0";
+        private const string AthleteTemplate = "d-23ad534900d547a6b5b04362ea96d16b";
+        private const string WaitListTemplate = "d-b7b1ec6c2ec54e31b49dab23584b1faa";
+        private const string NoMedicalTemplate = "d-97360ccc62864937a3e0e79a60b54dda";
+        private const string ExpiredTemplate = "d-ddf54cab8a514b02a72d54f4b1faa41a";
+        private const string ExpiringTemplate = "d-1dabedfc6e5445c7b914916822c7b1ab";
+        private const string WaitListNoMedicalTemplate = "d-16dcb63a082b4ccb8242b55f20f89ba9";
+        private const string WaitListExpiredTemplate = "d-a094a54cf8fb427eaeae56f20fccc419";
+        private const string WaitListExpiringTemplate = "d-3450ce63e0b4401cbb35529bd799c248";
         public string MedicalEmail { get; set; }
         public RegistrantMessageWorker(SendGridMessage message, RegistrantDb registrant)
         {
@@ -66,32 +64,19 @@ namespace pwsoProcesses.Workers
             BuildEmailFrom();
             BuildEmailTo();
             BuildEmailCopy();
-            //RegistrantSendGrid sendGrid = new RegistrantSendGrid
-            //{
-            //    MedicalExpirationDate = DateTime.Now.ToLongDateString(),
-            //    Sport = "Soccer at Woodbridge",
-            //    Name = "Erik Van Lowe"
-            //};
-            //_message.SetTemplateId("d-23ad534900d547a6b5b04362ea96d16b");
-            _message.SetTemplateId(BuildTemplate());
-            _message.SetTemplateData(_registrantSendGrid);
-            //BuildEmailSubject();
-            //BuildEmailBody();
-            //BuildAthleteMedicalEmailBody();
-            //BuildSignature();
-            if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
+            SetUpTemplate(BuildTemplate());
+            if (!_registrant.IsVolunteer || _registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue || _registrant.MedicalExpirationDate.Value < DateTime.Now.AddMonths(3))
             {
                 AddAttachments(medicalDownload, downloadInstructions);
             }
-            else
-            {
-                if (_registrant.MedicalExpirationDate.Value < DateTime.Now.AddMonths(3))
-                {
-                    AddAttachments(medicalDownload, downloadInstructions);
-                }
-            }
 
             return _message;
+        }
+
+        private void SetUpTemplate(string template)
+        {
+            _message.SetTemplateId(template);
+            _message.SetTemplateData(_registrantSendGrid);
         }
 
         public SendGridMessage PrepareMedicalEmail()
@@ -99,12 +84,7 @@ namespace pwsoProcesses.Workers
             BuildEmailFrom();
             BuildEmailMedicalTo();
             BuildEmailCopy();
-            _message.SetTemplateId(medicalTemplate);
-            _message.SetTemplateData(_registrantSendGrid);
-
-            //BuildMedicalSubject();
-            //BuildMedicalEmailBody();
-            //BuildSignature();
+            SetUpTemplate(MedicalTemplate);
             return _message;
         }
 
@@ -149,69 +129,6 @@ namespace pwsoProcesses.Workers
             }
         }
 
-
-        public void BuildEmailSubject()
-        {
-            var name = FormatName();
-            var subject = name + " is registered for ";
-            subject += _registrant.Sport;
-            _message.Subject = subject;
-        }
-
-        public void BuildMedicalSubject()
-        {
-            var name = FormatName();
-            var subject = name + " release form missing for ";
-            subject += _registrant.Sport;
-            _message.Subject = subject;
-        }
-
-        public void BuildEmailBody()
-        {
-            const string body = "<br>Hi Registrant<br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
-            var message = BuildMessage(body);
-            _message.HtmlContent = message;
-        }
-
-        public void BuildAthleteMedicalEmailBody()
-        {
-            _message.HtmlContent += "<br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
-            _message.HtmlContent += FormatName();
-            _message.HtmlContent += " release form ";
-            if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
-            {
-                _message.HtmlContent += "could not be verified automatically and therefore needs to be checked manually we will connect you to let you if there is anything you need to do before this athlete can participate.";
-            }
-            else
-            {
-                var medicalExpirationDate = _registrant.MedicalExpirationDate.Value;
-                if (medicalExpirationDate > DateTime.Now)
-                {
-                    _message.HtmlContent += "has been verified and is up to date, therefore can participate.";
-                    if (medicalExpirationDate >= DateTime.Now.AddMonths(3)) return;
-                    _message.HtmlContent += " However, this athletes form will be expiring on ";
-                    _message.HtmlContent += medicalExpirationDate.ToShortDateString();
-                    _message.HtmlContent += ", please update before it expires.";
-                }
-                else
-                {
-                    _message.HtmlContent += "had expired on ";
-                    _message.HtmlContent += medicalExpirationDate.ToShortDateString();
-                    _message.HtmlContent += ". The athletes release needs to be updated before they can participate.";
-                }
-            }
-
-        }
-
-        public void BuildSignature()
-        {
-            _message.HtmlContent += "<br><br><br>PWSO Registration Application";
-            _message.HtmlContent += "<br>Prince William Special Olympics";
-            _message.HtmlContent += "<br>PO Box 1073";
-            _message.HtmlContent += "<br>Woodbridge, VA 22195-1073";
-            _message.HtmlContent += "<br>www.pwsova.org";
-        }
-
         public void AddAttachments(BlobDownloadInfo medicalDownload, BlobDownloadInfo downloadInstructions)
         {
             BinaryReader medicalReader = new BinaryReader(medicalDownload.Content);
@@ -224,75 +141,29 @@ namespace pwsoProcesses.Workers
         }
 
 
-        public void BuildMedicalEmailBody()
-        {
-            const string body = "<br>Hi Medical Coordinator<br><br>&nbsp;&nbsp;&nbsp;&nbsp;";
-            var message = BuildMedicalMessage(body);
-            _message.HtmlContent = message;
-        }
-
         public string BuildTemplate()
         {
             if (_registrant.IsVolunteer)
             {
-                return volunteerTemplate;
-            }
-            else
-            {
-                if (_registrant.IsWaitListed)
-                {
-                    if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
-                    {
-                        return waitlistNoMedicalTemplate;
-                    }
-                    else
-                    {
-                        var medicalExpirationDate = _registrant.MedicalExpirationDate.Value;
-                        if (medicalExpirationDate > DateTime.Now)
-                        {
-                            if (medicalExpirationDate >= DateTime.Now.AddMonths(3))
-                            {
-                                return waitlistTemplate;
-                            }
-                            else
-                            {
-                                return waitlistExpiringTemplate;
-                            }
-                        }
-                        else
-                        {
-                            return waitlistExpiredTemplate;
-                        }
-                    }
-                }
-                else
-                {
-                    if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
-                    {
-                        return noMedicalTemplate;
-                    }
-                    else
-                    {
-                        var medicalExpirationDate = _registrant.MedicalExpirationDate.Value;
-                        if (medicalExpirationDate > DateTime.Now)
-                        {
-                            if (medicalExpirationDate >= DateTime.Now.AddMonths(3))
-                            {
-                                return athleteTemplate;
-                            }
-                            else
-                            {
-                                return expiringTemplate;
-                            }
-                        }
-                        else
-                        {
-                            return expiredTemplate;
-                        }
-                    }
-                }
+                return VolunteerTemplate;
             }
 
+            return _registrant.IsWaitListed ? SetAthleteTemplates(WaitListNoMedicalTemplate, WaitListTemplate, WaitListExpiringTemplate, WaitListExpiredTemplate) : SetAthleteTemplates(NoMedicalTemplate, AthleteTemplate, ExpiringTemplate, ExpiredTemplate);
+        }
+
+        private string SetAthleteTemplates(string noMed, string normal, string expiring, string expired)
+        {
+            if (_registrant.AthleteId == 0 || !_registrant.MedicalExpirationDate.HasValue)
+            {
+                return noMed;
+            }
+
+            if (_registrant.MedicalExpirationDate.Value > DateTime.Now)
+            {
+                return _registrant.MedicalExpirationDate.Value >= DateTime.Now.AddMonths(3) ? normal : expiring;
+            }
+
+            return expired;
         }
 
         public string BuildMessage(string body)
@@ -332,21 +203,6 @@ namespace pwsoProcesses.Workers
             {
                 body += ".";
             }
-            return body;
-        }
-
-        private string BuildMedicalMessage(string body)
-        {
-            var name = FormatName();
-            body += name;
-            body += " release form could not be verified automatically when registering for ";
-            body += _registrant.Sport;
-            if (!string.IsNullOrEmpty(_registrant.ProgramName))
-            {
-                body += " at " + _registrant.ProgramName;
-            }
-
-            body += ".<br><br>&nbsp;&nbsp;&nbsp;&nbsp;Please verify manually.";
             return body;
         }
 
